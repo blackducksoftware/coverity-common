@@ -7,11 +7,11 @@ buildscript {
     dependencies { classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+' }
 }
 plugins { id 'groovy' }
-
+group = 'com.sig.integration'
 version = '0.0.1-SNAPSHOT'
 
 apply plugin: 'com.blackducksoftware.integration.library'
 
 dependencies {
-  
+    compile 'com.blackducksoftware.integration:integration-common:9.2.0'
 }
