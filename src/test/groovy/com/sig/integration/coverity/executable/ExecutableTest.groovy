@@ -1,10 +1,13 @@
 package com.sig.integration.coverity.executable
 
+import com.sig.integration.coverity.exception.CoverityExecutableException
+import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertNotNull;
 
 public class ExecutableTest {
     @Rule
@@ -52,6 +55,21 @@ public class ExecutableTest {
         arguments = Arrays.asList("--pa", "secretPassword", "test", "things");
         executable = new Executable(workingDirectory, executablePath, arguments);
         assertEquals(String.format("%s --pa %s test things", executablePath, Executable.MASKED_PASSWORD), executable.getMaskedExecutableArguments());
+    }
+
+    @Test
+    public void testGetMaskedExecutableArgumentsMultiplePasswords() {
+        File workingDirectory = temporaryFolder.newFolder();
+        String executablePath = workingDirectory.getAbsolutePath();
+
+        List<String> arguments = Arrays.asList("test", "--pa", "secretPassword", "things", "--password", "secret");
+        Executable executable = new Executable(workingDirectory, executablePath, arguments);
+        try {
+            executable.getMaskedExecutableArguments();
+            Assert.fail("Should have thrown an exception");
+        } catch (CoverityExecutableException e) {
+            assertNotNull(e);
+        }
     }
 
     @Test
@@ -107,5 +125,19 @@ public class ExecutableTest {
         environment.putAll(System.getenv());
         environment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "secretPassword");
         assertEquals(environment, processBuilder.environment());
+    }
+
+    @Test
+    public void testCreateProcessBuilderMultiplePasswords() {
+        File workingDirectory = temporaryFolder.newFolder();
+        String executablePath = workingDirectory.getAbsolutePath();
+        List<String> arguments = Arrays.asList("test", "--pa", "secretPassword", "things", "--password", "secret");
+        Executable executable = new Executable(workingDirectory, executablePath, arguments);
+        try {
+            executable.createProcessBuilder();
+            Assert.fail("Should have thrown an exception");
+        } catch (CoverityExecutableException e) {
+            assertNotNull(e);
+        }
     }
 }

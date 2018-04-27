@@ -9,6 +9,8 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.sig.integration.coverity.exception.CoverityExecutableException;
+
 public class Executable {
     public static final String MASKED_PASSWORD = "********";
     public static final String COVERITY_PASSWORD_ENVIRONMENT_VARIABLE = "COVERITY_PASSPHRASE";
@@ -30,7 +32,7 @@ public class Executable {
         this.executableArguments.addAll(executableArguments);
     }
 
-    public ProcessBuilder createProcessBuilder() {
+    public ProcessBuilder createProcessBuilder() throws CoverityExecutableException {
         List<String> processedExecutableArguments = processExecutableArguments();
         final List<String> processBuilderArguments = createProcessBuilderArguments(processedExecutableArguments);
         final ProcessBuilder processBuilder = new ProcessBuilder(processBuilderArguments);
@@ -64,68 +66,49 @@ public class Executable {
         return processBuilderArguments;
     }
 
-    public String getMaskedExecutableArguments() {
-        final List<String> arguments = new ArrayList<>();
+    public String getMaskedExecutableArguments() throws CoverityExecutableException {
+        final List<String> arguments = new ArrayList<>(createProcessBuilderArguments());
 
-        List<String> processBuilderArguments = createProcessBuilderArguments();
-        if (processBuilderArguments.size() > 1) {
-            for (int i = 0; i < processBuilderArguments.size(); i++) {
-                final String currentArgument = processBuilderArguments.get(i);
-                if (currentArgument.equals("--password")) {
-                    Optional<String> possibleValue = getValueAtIndex(i + 1, processBuilderArguments);
-                    arguments.add(currentArgument);
-                    if (possibleValue.isPresent()) {
-                        arguments.add(MASKED_PASSWORD);
-                        // Skip the next index since we know its the password
-                        i++;
-                    }
-                } else if (currentArgument.equals("--pa")) {
-                    Optional<String> possibleValue = getValueAtIndex(i + 1, processBuilderArguments);
-                    arguments.add(currentArgument);
-                    if (possibleValue.isPresent()) {
-                        arguments.add(MASKED_PASSWORD);
-                        // Skip the next index since we know its the password
-                        i++;
-                    }
-                } else {
-                    arguments.add(currentArgument);
-                }
-            }
-        } else {
-            arguments.addAll(processBuilderArguments);
+        Optional<Integer> passwordIndex = getPasswordIndex(arguments);
+        if (passwordIndex.isPresent()) {
+            arguments.set(passwordIndex.get(), MASKED_PASSWORD);
         }
         return StringUtils.join(arguments, ' ');
     }
 
-    private List<String> processExecutableArguments() {
+    private List<String> processExecutableArguments() throws CoverityExecutableException {
         // If the User provided the password as an argument, we want to set it as the environment variable of the process so it is not exposed when looking up the process
-        List<String> processedExecutableArguments = new ArrayList<>();
-        if (executableArguments.size() > 1) {
-            for (int i = 0; i < executableArguments.size(); i++) {
-                final String currentArgument = executableArguments.get(i);
-                final String value = executableArguments.get(i);
-                if (currentArgument.equals("--password")) {
-                    Optional<String> possibleValue = getValueAtIndex(i + 1, executableArguments);
-                    if (possibleValue.isPresent()) {
-                        populateEnvironmentMap(environmentVariables, COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, possibleValue.get());
-                        // Skip the next index since we know its the password
-                        i++;
-                    }
-                } else if (currentArgument.equals("--pa")) {
-                    Optional<String> possibleValue = getValueAtIndex(i + 1, executableArguments);
-                    if (possibleValue.isPresent()) {
-                        populateEnvironmentMap(environmentVariables, COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, possibleValue.get());
-                        // Skip the next index since we know its the password
-                        i++;
-                    }
-                } else {
-                    processedExecutableArguments.add(currentArgument);
-                }
-            }
-        } else {
-            processedExecutableArguments.addAll(executableArguments);
+        // Passwords are provided using --password password OR --pa password
+        List<String> processedExecutableArguments = new ArrayList<>(executableArguments);
+
+        Optional<Integer> passwordIndex = getPasswordIndex(processedExecutableArguments);
+        if (passwordIndex.isPresent()) {
+            int indexToRemove = passwordIndex.get().intValue();
+            String removedValue = processedExecutableArguments.remove(indexToRemove);
+            //also remove the argument before the password
+            processedExecutableArguments.remove(indexToRemove - 1);
+            populateEnvironmentMap(environmentVariables, COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, removedValue);
         }
         return processedExecutableArguments;
+    }
+
+    private Optional<Integer> getPasswordIndex(List<String> list) throws CoverityExecutableException {
+        // Passwords are provided using --password password OR --pa password
+        Optional<Integer> passwordIndex = Optional.empty();
+        if (!list.isEmpty()) {
+            for (int i = 0; i < list.size(); i++) {
+                final String currentArgument = list.get(i);
+                if (currentArgument.equals("--password") || currentArgument.equals("--pa")) {
+                    if (i + 1 <= list.size() - 1) {
+                        if (passwordIndex.isPresent()) {
+                            throw new CoverityExecutableException("Can not provide multiple password arguments.");
+                        }
+                        passwordIndex = Optional.of(i + 1);
+                    }
+                }
+            }
+        }
+        return passwordIndex;
     }
 
     private Optional<String> getValueAtIndex(int index, List<String> list) {
