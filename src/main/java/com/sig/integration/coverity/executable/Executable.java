@@ -2,6 +2,7 @@ package com.sig.integration.coverity.executable;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,26 +17,25 @@ public class Executable {
     public static final String COVERITY_PASSWORD_ENVIRONMENT_VARIABLE = "COVERITY_PASSPHRASE";
     private final File workingDirectory;
     private final Map<String, String> environmentVariables = new HashMap<>();
-    private final String executablePath;
     private final List<String> executableArguments = new ArrayList<>();
 
-    public Executable(final File workingDirectory, final String executablePath, final List<String> executableArguments) {
-        this.workingDirectory = workingDirectory;
-        this.executablePath = executablePath;
-        this.executableArguments.addAll(executableArguments);
+    public Executable(final List<String> executableArguments) {
+        this(executableArguments, new File(System.getProperty("user.dir")));
     }
 
-    public Executable(final File workingDirectory, final Map<String, String> environmentVariables, final String executablePath, final List<String> executableArguments) {
+    public Executable(final List<String> executableArguments, final File workingDirectory) {
+        this(executableArguments, workingDirectory, Collections.emptyMap());
+    }
+
+    public Executable(final List<String> executableArguments, final File workingDirectory, final Map<String, String> environmentVariables) {
         this.workingDirectory = workingDirectory;
-        this.environmentVariables.putAll(environmentVariables);
-        this.executablePath = executablePath;
         this.executableArguments.addAll(executableArguments);
+        this.environmentVariables.putAll(environmentVariables);
     }
 
     public ProcessBuilder createProcessBuilder() throws CoverityExecutableException {
         List<String> processedExecutableArguments = processExecutableArguments();
-        final List<String> processBuilderArguments = createProcessBuilderArguments(processedExecutableArguments);
-        final ProcessBuilder processBuilder = new ProcessBuilder(processBuilderArguments);
+        final ProcessBuilder processBuilder = new ProcessBuilder(processedExecutableArguments);
         processBuilder.directory(workingDirectory);
         final Map<String, String> processBuilderEnvironment = processBuilder.environment();
         final Map<String, String> systemEnv = System.getenv();
@@ -48,26 +48,16 @@ public class Executable {
         return processBuilder;
     }
 
-    public String getExecutableArguments() {
-        return StringUtils.join(createProcessBuilderArguments(), ' ');
+    public String getJoinedExecutableArguments() {
+        return StringUtils.join(getExecutableArguments(), ' ');
     }
 
-    private List<String> createProcessBuilderArguments() {
-        return createProcessBuilderArguments(executableArguments);
-    }
-
-    private List<String> createProcessBuilderArguments(List<String> executableArguments) {
-        // ProcessBuilder can only be called with a List<java.lang.String> so do any needed conversion
-        final List<String> processBuilderArguments = new ArrayList<>();
-        processBuilderArguments.add(executablePath.toString());
-        for (final String arg : executableArguments) {
-            processBuilderArguments.add(arg.toString());
-        }
-        return processBuilderArguments;
+    public List<String> getExecutableArguments() {
+        return executableArguments;
     }
 
     public String getMaskedExecutableArguments() throws CoverityExecutableException {
-        final List<String> arguments = new ArrayList<>(createProcessBuilderArguments());
+        final List<String> arguments = new ArrayList<>(getExecutableArguments());
 
         Optional<Integer> passwordIndex = getPasswordIndex(arguments);
         if (passwordIndex.isPresent()) {
@@ -79,7 +69,7 @@ public class Executable {
     private List<String> processExecutableArguments() throws CoverityExecutableException {
         // If the User provided the password as an argument, we want to set it as the environment variable of the process so it is not exposed when looking up the process
         // Passwords are provided using --password password OR --pa password
-        List<String> processedExecutableArguments = new ArrayList<>(executableArguments);
+        List<String> processedExecutableArguments = new ArrayList<>(getExecutableArguments());
 
         Optional<Integer> passwordIndex = getPasswordIndex(processedExecutableArguments);
         if (passwordIndex.isPresent()) {
@@ -109,14 +99,6 @@ public class Executable {
             }
         }
         return passwordIndex;
-    }
-
-    private Optional<String> getValueAtIndex(int index, List<String> list) {
-        if (index < 0 || index > list.size()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(list.get(index));
-        }
     }
 
     private void populateEnvironmentMap(final Map<String, String> environment, final String key, final String value) {
