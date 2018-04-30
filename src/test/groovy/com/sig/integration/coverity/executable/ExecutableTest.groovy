@@ -1,6 +1,6 @@
 package com.sig.integration.coverity.executable
 
-import com.sig.integration.coverity.exception.CoverityExecutableException
+import com.sig.integration.coverity.exception.ExecutableException
 import org.apache.commons.lang3.StringUtils
 import org.junit.Assert
 import org.junit.Rule
@@ -91,120 +91,9 @@ public class ExecutableTest {
         try {
             executable.getMaskedExecutableArguments();
             Assert.fail("Should have thrown an exception");
-        } catch (CoverityExecutableException e) {
+        } catch (ExecutableException e) {
             assertNotNull(e);
         }
     }
 
-    @Test
-    public void testCreateProcessBuilderEmpty() {
-        File workingDirectory = temporaryFolder.newFolder();
-
-        Executable executable = new Executable(Collections.emptyList(), workingDirectory);
-        ProcessBuilder processBuilder = executable.createProcessBuilder();
-
-        assertEquals(workingDirectory, processBuilder.directory());
-
-        assertEquals(Collections.emptyList(), processBuilder.command());
-
-        Map<String, String> environment = new HashMap<>();
-        environment.putAll(System.getenv());
-        assertEquals(environment, processBuilder.environment());
-    }
-
-    @Test
-    public void testCreateProcessBuilder() {
-        File workingDirectory = temporaryFolder.newFolder();
-
-        List<String> arguments = Arrays.asList("test", "--pa", "secretPassword", "things");
-        Executable executable = new Executable(arguments, workingDirectory);
-        ProcessBuilder processBuilder = executable.createProcessBuilder();
-
-        assertEquals(workingDirectory, processBuilder.directory());
-
-        List<String> expectedArguments = Arrays.asList("test", "things");
-        assertEquals(expectedArguments, processBuilder.command());
-
-        Map<String, String> environment = new HashMap<>();
-        environment.putAll(System.getenv());
-        environment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "secretPassword");
-        assertEquals(environment, processBuilder.environment());
-    }
-
-    @Test
-    public void testCreateProcessBuilder2() {
-        File workingDirectory = temporaryFolder.newFolder();
-
-        List<String> arguments = Arrays.asList("--pa", "secretPassword", "test", "things");
-        Executable executable = new Executable(arguments, workingDirectory);
-        ProcessBuilder processBuilder = executable.createProcessBuilder();
-
-        assertEquals(workingDirectory, processBuilder.directory());
-
-        List<String> expectedArguments = Arrays.asList("test", "things");
-        assertEquals(expectedArguments, processBuilder.command());
-
-        Map<String, String> environment = new HashMap<>();
-        environment.putAll(System.getenv());
-        environment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "secretPassword");
-        assertEquals(environment, processBuilder.environment());
-    }
-
-    @Test
-    public void testCreateProcessBuilderEnvironmentPassword() {
-        File workingDirectory = temporaryFolder.newFolder();
-
-        List<String> arguments = Arrays.asList("test", "things");
-        Map<String, String> preEnvironment = new HashMap<>();
-        preEnvironment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "password");
-
-        Executable executable = new Executable(arguments, workingDirectory, preEnvironment);
-        ProcessBuilder processBuilder = executable.createProcessBuilder();
-
-        assertEquals(workingDirectory, processBuilder.directory());
-
-        List<String> expectedArguments = Arrays.asList("test", "things");
-        assertEquals(expectedArguments, processBuilder.command());
-
-        Map<String, String> environment = new HashMap<>();
-        environment.putAll(System.getenv());
-        environment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "password");
-        assertEquals(environment, processBuilder.environment());
-    }
-
-    @Test
-    public void testCreateProcessBuilderEnvironmentPasswordOverriden() {
-        File workingDirectory = temporaryFolder.newFolder();
-
-        List<String> arguments = Arrays.asList("--pa", "secretPassword", "test", "things");
-        Map<String, String> preEnvironment = new HashMap<>();
-        preEnvironment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "password");
-
-        Executable executable = new Executable(arguments, workingDirectory, preEnvironment);
-        ProcessBuilder processBuilder = executable.createProcessBuilder();
-
-        assertEquals(workingDirectory, processBuilder.directory());
-
-        List<String> expectedArguments = Arrays.asList("test", "things");
-        assertEquals(expectedArguments, processBuilder.command());
-
-        Map<String, String> environment = new HashMap<>();
-        environment.putAll(System.getenv());
-        environment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "secretPassword");
-        assertEquals(environment, processBuilder.environment());
-    }
-
-    @Test
-    public void testCreateProcessBuilderMultiplePasswords() {
-        File workingDirectory = temporaryFolder.newFolder();
-
-        List<String> arguments = Arrays.asList("test", "--pa", "secretPassword", "things", "--password", "secret");
-        Executable executable = new Executable(arguments, workingDirectory);
-        try {
-            executable.createProcessBuilder();
-            Assert.fail("Should have thrown an exception");
-        } catch (CoverityExecutableException e) {
-            assertNotNull(e);
-        }
-    }
 }

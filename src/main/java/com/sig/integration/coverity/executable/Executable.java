@@ -10,9 +10,9 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.sig.integration.coverity.exception.CoverityExecutableException;
+import com.sig.integration.coverity.exception.ExecutableException;
 
-public class Executable {
+public class Executable extends EnvironmentContributor {
     public static final String MASKED_PASSWORD = "********";
     public static final String COVERITY_PASSWORD_ENVIRONMENT_VARIABLE = "COVERITY_PASSPHRASE";
     private final File workingDirectory;
@@ -33,21 +33,6 @@ public class Executable {
         this.environmentVariables.putAll(environmentVariables);
     }
 
-    public ProcessBuilder createProcessBuilder() throws CoverityExecutableException {
-        List<String> processedExecutableArguments = processExecutableArguments();
-        final ProcessBuilder processBuilder = new ProcessBuilder(processedExecutableArguments);
-        processBuilder.directory(workingDirectory);
-        final Map<String, String> processBuilderEnvironment = processBuilder.environment();
-        final Map<String, String> systemEnv = System.getenv();
-        for (final String key : systemEnv.keySet()) {
-            populateEnvironmentMap(processBuilderEnvironment, key, systemEnv.get(key));
-        }
-        for (final String key : environmentVariables.keySet()) {
-            populateEnvironmentMap(processBuilderEnvironment, key, environmentVariables.get(key));
-        }
-        return processBuilder;
-    }
-
     public String getJoinedExecutableArguments() {
         return StringUtils.join(getExecutableArguments(), ' ');
     }
@@ -56,7 +41,7 @@ public class Executable {
         return executableArguments;
     }
 
-    public String getMaskedExecutableArguments() throws CoverityExecutableException {
+    public String getMaskedExecutableArguments() throws ExecutableException {
         final List<String> arguments = new ArrayList<>(getExecutableArguments());
 
         Optional<Integer> passwordIndex = getPasswordIndex(arguments);
@@ -66,7 +51,15 @@ public class Executable {
         return StringUtils.join(arguments, ' ');
     }
 
-    private List<String> processExecutableArguments() throws CoverityExecutableException {
+    public Map<String, String> getEnvironmentVariables() {
+        return environmentVariables;
+    }
+
+    public File getWorkingDirectory() {
+        return workingDirectory;
+    }
+
+    public List<String> processExecutableArguments() throws ExecutableException {
         // If the User provided the password as an argument, we want to set it as the environment variable of the process so it is not exposed when looking up the process
         // Passwords are provided using --password password OR --pa password
         List<String> processedExecutableArguments = new ArrayList<>(getExecutableArguments());
@@ -77,12 +70,12 @@ public class Executable {
             String removedValue = processedExecutableArguments.remove(indexToRemove);
             //also remove the argument before the password
             processedExecutableArguments.remove(indexToRemove - 1);
-            populateEnvironmentMap(environmentVariables, COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, removedValue);
+            populateEnvironmentMap(getEnvironmentVariables(), COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, removedValue);
         }
         return processedExecutableArguments;
     }
 
-    private Optional<Integer> getPasswordIndex(List<String> list) throws CoverityExecutableException {
+    private Optional<Integer> getPasswordIndex(List<String> list) throws ExecutableException {
         // Passwords are provided using --password password OR --pa password
         Optional<Integer> passwordIndex = Optional.empty();
         if (!list.isEmpty()) {
@@ -91,7 +84,7 @@ public class Executable {
                 if (currentArgument.equals("--password") || currentArgument.equals("--pa")) {
                     if (i + 1 <= list.size() - 1) {
                         if (passwordIndex.isPresent()) {
-                            throw new CoverityExecutableException("Can not provide multiple password arguments.");
+                            throw new ExecutableException("Can not provide multiple password arguments.");
                         }
                         passwordIndex = Optional.of(i + 1);
                     }
@@ -101,10 +94,4 @@ public class Executable {
         return passwordIndex;
     }
 
-    private void populateEnvironmentMap(final Map<String, String> environment, final String key, final String value) {
-        // ProcessBuilder's environment's keys and values must be non-null java.lang.String's
-        if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(value)) {
-            environment.put(key, value);
-        }
-    }
 }
