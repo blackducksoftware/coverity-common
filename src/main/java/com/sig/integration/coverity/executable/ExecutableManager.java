@@ -102,8 +102,9 @@ public class ExecutableManager extends EnvironmentContributor {
         if (!coverityBinDirectory.isDirectory()) {
             throw new ExecutableException("The bin directory does not exist in the Coverity Static Analysis directory provided, or it is not a directory.");
         }
-
-        arguments.set(0, coverityBinDirectory.getAbsolutePath() + File.separator + arguments.get(0));
+        if (!arguments.isEmpty()) {
+            arguments.set(0, coverityBinDirectory.getAbsolutePath() + File.separator + arguments.get(0));
+        }
     }
 
     public File getCoverityStaticAnalysisDirectory() {

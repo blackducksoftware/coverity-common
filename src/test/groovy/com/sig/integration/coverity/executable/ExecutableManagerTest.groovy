@@ -36,7 +36,7 @@ class ExecutableManagerTest {
         File coverityStaticAnalysisDirectory = new File(directory, "coverity-analysis");
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
         try {
-            executableManager.addCoverityBinToPath(new HashMap<String, String>());
+            executableManager.addCoverityBinToArguments(new ArrayList<String>());
             Assert.fail("Should have thrown an exception");
         } catch (ExecutableException e) {
             assertNotNull(e);
@@ -50,7 +50,7 @@ class ExecutableManagerTest {
         coverityStaticAnalysisDirectory.mkdirs();
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
         try {
-            executableManager.addCoverityBinToPath(new HashMap<String, String>());
+            executableManager.addCoverityBinToArguments(new ArrayList<String>());
             Assert.fail("Should have thrown an exception");
         } catch (ExecutableException e) {
             assertNotNull(e);
@@ -58,33 +58,31 @@ class ExecutableManagerTest {
     }
 
     @Test
-    public void testAddCoverityBinToPathNoPath() {
+    public void testAddCoverityBinToPathNoArguments() {
         File directory = temporaryFolder.newFolder();
         File coverityStaticAnalysisDirectory = new File(directory, "coverity-analysis");
         File coverityStaticAnalysisBinDirectory = new File(coverityStaticAnalysisDirectory, "bin");
         coverityStaticAnalysisBinDirectory.mkdirs();
 
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
-        Map<String, String> environment = new HashMap<String, String>();
-
-        executableManager.addCoverityBinToPath(environment);
-        assertTrue(environment.containsKey("PATH"))
-        assertEquals(coverityStaticAnalysisBinDirectory.getAbsolutePath(), environment.get("PATH"));
+        List<String> arguments = new ArrayList<String>();
+        executableManager.addCoverityBinToArguments(arguments);
+        assertTrue(arguments.isEmpty());
     }
 
     @Test
-    public void testAddCoverityBinToPathWithPath() {
+    public void testAddCoverityBinToPathWithArgument() {
         File directory = temporaryFolder.newFolder();
         File coverityStaticAnalysisDirectory = new File(directory, "coverity-analysis");
         File coverityStaticAnalysisBinDirectory = new File(coverityStaticAnalysisDirectory, "bin");
         coverityStaticAnalysisBinDirectory.mkdirs();
 
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
-        Map<String, String> environment = new HashMap<String, String>();
-        environment.put("PATH", "thing");
-        executableManager.addCoverityBinToPath(environment);
-        assertTrue(environment.containsKey("PATH"))
-        assertEquals(String.format("%s%s%s", coverityStaticAnalysisBinDirectory.getAbsolutePath(), File.pathSeparator, "thing"), environment.get("PATH"));
+        List<String> arguments = new ArrayList<String>();
+        arguments.add("test");
+
+        executableManager.addCoverityBinToArguments(arguments);
+        assertEquals(coverityStaticAnalysisBinDirectory.getAbsolutePath() + File.separator + "test", arguments.get(0));
     }
 
     @Test
@@ -102,7 +100,6 @@ class ExecutableManagerTest {
 
         Map<String, String> environment = new HashMap<>();
         environment.putAll(System.getenv());
-        environment.put("PATH", String.format("%s%s%s", coverityStaticAnalysisBinDirectory.getAbsolutePath(), File.pathSeparator, environment.get("PATH")));
         assertEquals(environment, processBuilder.environment());
     }
 
@@ -118,12 +115,11 @@ class ExecutableManagerTest {
 
         assertEquals(workingDirectory, processBuilder.directory());
 
-        List<String> expectedArguments = Arrays.asList("test", "things");
+        List<String> expectedArguments = Arrays.asList(coverityStaticAnalysisBinDirectory.getAbsolutePath() + File.separator + "test", "things");
         assertEquals(expectedArguments, processBuilder.command());
 
         Map<String, String> environment = new HashMap<>();
         environment.putAll(System.getenv());
-        environment.put("PATH", String.format("%s%s%s", coverityStaticAnalysisBinDirectory.getAbsolutePath(), File.pathSeparator, environment.get("PATH")));
         environment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "secretPassword");
         assertEquals(environment, processBuilder.environment());
     }
@@ -140,12 +136,11 @@ class ExecutableManagerTest {
 
         assertEquals(workingDirectory, processBuilder.directory());
 
-        List<String> expectedArguments = Arrays.asList("test", "things");
+        List<String> expectedArguments = Arrays.asList(coverityStaticAnalysisBinDirectory.getAbsolutePath() + File.separator + "test", "things");
         assertEquals(expectedArguments, processBuilder.command());
 
         Map<String, String> environment = new HashMap<>();
         environment.putAll(System.getenv());
-        environment.put("PATH", String.format("%s%s%s", coverityStaticAnalysisBinDirectory.getAbsolutePath(), File.pathSeparator, environment.get("PATH")));
         environment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "secretPassword");
         assertEquals(environment, processBuilder.environment());
     }
@@ -165,12 +160,11 @@ class ExecutableManagerTest {
 
         assertEquals(workingDirectory, processBuilder.directory());
 
-        List<String> expectedArguments = Arrays.asList("test", "things");
+        List<String> expectedArguments = Arrays.asList(coverityStaticAnalysisBinDirectory.getAbsolutePath() + File.separator + "test", "things");
         assertEquals(expectedArguments, processBuilder.command());
 
         Map<String, String> environment = new HashMap<>();
         environment.putAll(System.getenv());
-        environment.put("PATH", String.format("%s%s%s", coverityStaticAnalysisBinDirectory.getAbsolutePath(), File.pathSeparator, environment.get("PATH")));
         environment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "password");
         assertEquals(environment, processBuilder.environment());
     }
@@ -190,12 +184,11 @@ class ExecutableManagerTest {
 
         assertEquals(workingDirectory, processBuilder.directory());
 
-        List<String> expectedArguments = Arrays.asList("test", "things");
+        List<String> expectedArguments = Arrays.asList(coverityStaticAnalysisBinDirectory.getAbsolutePath() + File.separator + "test", "things");
         assertEquals(expectedArguments, processBuilder.command());
 
         Map<String, String> environment = new HashMap<>();
         environment.putAll(System.getenv());
-        environment.put("PATH", String.format("%s%s%s", coverityStaticAnalysisBinDirectory.getAbsolutePath(), File.pathSeparator, environment.get("PATH")));
         environment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "secretPassword");
         assertEquals(environment, processBuilder.environment());
     }
