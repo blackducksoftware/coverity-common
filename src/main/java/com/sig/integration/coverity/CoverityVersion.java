@@ -35,8 +35,6 @@ public class CoverityVersion implements Comparable<CoverityVersion>, Serializabl
     public static final CoverityVersion VERSION_JASPER = new CoverityVersion(8, 0, 0, 0);
     public static final CoverityVersion VERSION_JASPER1 = new CoverityVersion(8, 1, 0, 0);
 
-    public static final CoverityVersion MINIMUM_SUPPORTED_VERSION = VERSION_JASPER;
-
     final int major;
     final int minor;
     final int patch;
