@@ -37,6 +37,9 @@ import com.sig.integration.coverity.exception.ExecutableException;
 
 public class Executable extends EnvironmentContributor {
     public static final String MASKED_PASSWORD = "********";
+    public static final String COVERITY_HOST_ENVIRONMENT_VARIABLE = "COVERITY_HOST";
+    public static final String COVERITY_PORT_ENVIRONMENT_VARIABLE = "COVERITY_PORT";
+    public static final String COVERITY_USER_ENVIRONMENT_VARIABLE = "COV_USER";
     public static final String COVERITY_PASSWORD_ENVIRONMENT_VARIABLE = "COVERITY_PASSPHRASE";
     private final File workingDirectory;
     private final Map<String, String> environmentVariables = new HashMap<>();

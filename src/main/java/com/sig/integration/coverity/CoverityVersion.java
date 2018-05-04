@@ -24,6 +24,7 @@
 package com.sig.integration.coverity;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -57,9 +58,9 @@ public class CoverityVersion implements Comparable<CoverityVersion>, Serializabl
         this.minor = minor;
     }
 
-    public static CoverityVersion parse(String s) {
+    public static Optional<CoverityVersion> parse(String s) {
         if (StringUtils.isEmpty(s)) {
-            return null;
+            return Optional.empty();
         }
 
         final String[] parts = s.split("\\.");
@@ -77,16 +78,16 @@ public class CoverityVersion implements Comparable<CoverityVersion>, Serializabl
             }
             srmVersion.isSrmVersion = true;
             srmVersion.srmVersion = s;
-            return srmVersion;
+            return Optional.of(srmVersion);
         } else if (parts.length == 3) {
             //number
-            return new CoverityVersion(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), 0);
+            return Optional.of(new CoverityVersion(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), 0));
         } else if (parts.length == 4) {
             //number w/hotfix
-            return new CoverityVersion(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
+            return Optional.of(new CoverityVersion(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3])));
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
