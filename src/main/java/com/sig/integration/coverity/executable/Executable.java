@@ -69,7 +69,10 @@ public class Executable extends EnvironmentContributor {
 
     public String getMaskedExecutableArguments() throws ExecutableException {
         final List<String> arguments = new ArrayList<>(getExecutableArguments());
+        return getMaskedExecutableArguments(arguments);
+    }
 
+    public String getMaskedExecutableArguments(final List<String> arguments) throws ExecutableException {
         Optional<Integer> passwordIndex = getPasswordIndex(arguments);
         if (passwordIndex.isPresent()) {
             arguments.set(passwordIndex.get(), MASKED_PASSWORD);

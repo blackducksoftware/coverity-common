@@ -41,9 +41,9 @@ public class ExecutableManager extends EnvironmentContributor {
     }
 
     public int execute(final Executable executable, IntLogger logger, PrintStream standardOutput, PrintStream errorOutput) throws InterruptedException, ExecutableException, ExecutableRunnerException {
-        logger.info(String.format("Running executable >%s", executable.getMaskedExecutableArguments()));
         try {
             final ProcessBuilder processBuilder = createProcessBuilder(executable);
+            logger.info(String.format("Running executable >%s", executable.getMaskedExecutableArguments(processBuilder.command())));
             final Process process = processBuilder.start();
 
             try (InputStream standardOutputStream = process.getInputStream(); InputStream standardErrorStream = process.getErrorStream()) {
