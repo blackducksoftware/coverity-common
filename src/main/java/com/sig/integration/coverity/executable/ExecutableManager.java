@@ -74,7 +74,7 @@ public class ExecutableManager extends EnvironmentContributor {
                     }
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | ExecutableException e) {
             throw e;
         } catch (final Exception e) {
             throw new ExecutableRunnerException(e);
@@ -96,11 +96,11 @@ public class ExecutableManager extends EnvironmentContributor {
 
     private void addCoverityBinToArguments(List<String> arguments) throws ExecutableException {
         if (!coverityStaticAnalysisDirectory.isDirectory()) {
-            throw new ExecutableException("The Coverity Static Analysis directory provided does not exist, or is not a directory.");
+            throw new ExecutableException(String.format("The Coverity Static Analysis directory '%s' does not exist, or is not a directory.", coverityStaticAnalysisDirectory.getAbsolutePath()));
         }
         File coverityBinDirectory = new File(coverityStaticAnalysisDirectory, "bin");
         if (!coverityBinDirectory.isDirectory()) {
-            throw new ExecutableException("The bin directory does not exist in the Coverity Static Analysis directory provided, or it is not a directory.");
+            throw new ExecutableException(String.format("The  Coverity Static Analysis bin directory '%s' does not exist, or is not a directory.", coverityBinDirectory.getAbsolutePath()));
         }
         if (!arguments.isEmpty()) {
             arguments.set(0, coverityBinDirectory.getAbsolutePath() + File.separator + arguments.get(0));
