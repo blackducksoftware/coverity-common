@@ -30,10 +30,15 @@ import java.util.Arrays;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.Handler;
+import javax.xml.ws.soap.SOAPFaultException;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.sig.integration.coverity.config.CoverityServerConfig;
+import com.sig.integration.coverity.exception.CoverityIntegrationException;
 import com.sig.integration.coverity.ws.v9.ConfigurationService;
 import com.sig.integration.coverity.ws.v9.ConfigurationServiceService;
+import com.sig.integration.coverity.ws.v9.CovRemoteServiceException_Exception;
 import com.sig.integration.coverity.ws.v9.DefectService;
 import com.sig.integration.coverity.ws.v9.DefectServiceService;
 
@@ -72,6 +77,18 @@ public class WebServiceFactory {
         attachAuthenticationHandler((BindingProvider) configurationService, coverityServerConfig.getUsername(), coverityServerConfig.getPassword());
 
         return configurationService;
+    }
+
+    public void connect() throws MalformedURLException, CoverityIntegrationException, CovRemoteServiceException_Exception {
+        ConfigurationService configurationService = createConfigurationService();
+        try {
+            configurationService.getUser(coverityServerConfig.getUsername());
+        } catch (SOAPFaultException e) {
+            if (StringUtils.isNotBlank(e.getMessage())) {
+                throw new CoverityIntegrationException(e.getMessage(), e);
+            }
+            throw new CoverityIntegrationException("An unexpected error occurred.", e);
+        }
     }
 
     private void attachAuthenticationHandler(BindingProvider service, String username, String password) {
