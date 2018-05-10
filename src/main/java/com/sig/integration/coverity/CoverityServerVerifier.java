@@ -23,49 +23,33 @@
  */
 package com.sig.integration.coverity;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.request.Request;
-import com.blackducksoftware.integration.hub.request.Response;
-import com.blackducksoftware.integration.hub.rest.UnauthenticatedRestConnection;
-import com.blackducksoftware.integration.hub.rest.UnauthenticatedRestConnectionBuilder;
-import com.blackducksoftware.integration.hub.rest.UriCombiner;
-import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
-import com.blackducksoftware.integration.log.LogLevel;
-import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 import com.sig.integration.coverity.exception.CoverityIntegrationException;
 import com.sig.integration.coverity.ws.WebServiceFactory;
 
 public class CoverityServerVerifier {
 
-    private final UriCombiner uriCombiner;
-
-    public CoverityServerVerifier(final UriCombiner uriCombiner) {
-        this.uriCombiner = uriCombiner;
-    }
-
-    public void verifyIsCoverityServer(final URL coverityURL,
-            final int timeoutSeconds) throws IntegrationException {
-
-        final UnauthenticatedRestConnectionBuilder connectionBuilder = new UnauthenticatedRestConnectionBuilder();
-        connectionBuilder.setLogger(new PrintStreamIntLogger(System.out, LogLevel.INFO));
-        connectionBuilder.setBaseUrl(coverityURL.toString());
-        connectionBuilder.setTimeout(timeoutSeconds);
-        connectionBuilder.setAlwaysTrustServerCertificate(true);
-        final UnauthenticatedRestConnection restConnection = connectionBuilder.build();
-
-        String wsdlURI = uriCombiner.pieceTogetherUri(coverityURL, WebServiceFactory.CONFIGURATION_SERVICE_V9_WSDL);
-        Request request = new Request.Builder(wsdlURI).build();
-        try (Response response = restConnection.executeRequest(request)) {
-
-        } catch (final IntegrationRestException e) {
-            throw new CoverityIntegrationException("The Url does not appear to be a Coverity server :" + wsdlURI + ", because: " + e.getHttpStatusCode() + " : " + e.getHttpStatusMessage(), e);
-        } catch (final IntegrationException e) {
-            throw new CoverityIntegrationException("The Url does not appear to be a Coverity server :" + wsdlURI + ", because: " + e.getMessage(), e);
-        } catch (final IOException e) {
-            throw new CoverityIntegrationException(e.getMessage(), e);
+    public void verifyIsCoverityServer(final URL coverityURL) throws IntegrationException {
+        URL wsdlURL = null;
+        try {
+            wsdlURL = new URL(coverityURL, WebServiceFactory.CONFIGURATION_SERVICE_V9_WSDL);
+            HttpURLConnection conn = (HttpURLConnection) wsdlURL.openConnection();
+            conn.setRequestMethod("GET");
+            conn.connect();
+            conn.getInputStream();
+        } catch (MalformedURLException e) {
+            throw new CoverityIntegrationException(e.getClass().getSimpleName() + ":" + e.getMessage(), e);
+        } catch (FileNotFoundException e) {
+            throw new CoverityIntegrationException("The Url does not appear to be a Coverity server :" + wsdlURL.toString(), e);
+        } catch (IOException e) {
+            throw new CoverityIntegrationException("The Url does not appear to be a Coverity server :" + wsdlURL.toString() + ", because: " + e.getMessage(), e);
         }
     }
+
 }
