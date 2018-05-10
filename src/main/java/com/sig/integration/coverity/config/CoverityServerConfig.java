@@ -23,9 +23,14 @@
  */
 package com.sig.integration.coverity.config;
 
+import java.io.Serializable;
 import java.net.URL;
 
-public class CoverityServerConfig {
+import com.blackducksoftware.integration.util.Stringable;
+
+public class CoverityServerConfig extends Stringable implements Serializable {
+    private static final long serialVersionUID = 8314444738247849945L;
+
     private final URL url;
     private final String username;
     private final String password;
