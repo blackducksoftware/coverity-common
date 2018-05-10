@@ -23,9 +23,6 @@
  */
 package com.sig.integration.coverity.ws;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -44,7 +41,7 @@ public class WebServiceFactory {
     public static final String DEFECT_SERVICE_V9_WSDL = "/ws/v9/defectservice?wsdl";
     public static final String CONFIGURATION_SERVICE_V9_WSDL = "/ws/v9/configurationservice?wsdl";
 
-    protected DefectService createDefectService(URL url, String username, String password) throws MalformedURLException {
+    public DefectService createDefectService(URL url, String username, String password) throws MalformedURLException {
         DefectServiceService defectServiceService = new DefectServiceService(
                 new URL(url, DEFECT_SERVICE_V9_WSDL),
                 new QName(COVERITY_V9_NAMESPACE, "DefectServiceService"));
@@ -55,7 +52,7 @@ public class WebServiceFactory {
         return defectService;
     }
 
-    protected ConfigurationService createConfigurationService(URL url, String username, String password) throws MalformedURLException {
+    public ConfigurationService createConfigurationService(URL url, String username, String password) throws MalformedURLException {
         ConfigurationServiceService configurationServiceService = new ConfigurationServiceService(
                 new URL(url, CONFIGURATION_SERVICE_V9_WSDL),
                 new QName(COVERITY_V9_NAMESPACE, "ConfigurationServiceService"));
@@ -66,48 +63,9 @@ public class WebServiceFactory {
         return configurationService;
     }
 
-    public CheckWsResponse getCheckWsdlURLResponse(URL baseUrl) {
-        URL url = null;
-        try {
-            url = new URL(baseUrl, WebServiceFactory.CONFIGURATION_SERVICE_V9_WSDL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.connect();
-            conn.getInputStream();
-            return new CheckWsResponse(conn.getResponseCode(), conn.getResponseMessage());
-        } catch (MalformedURLException e) {
-            return new CheckWsResponse(-1, e.getClass().getSimpleName() + ": " + e.getMessage());
-        } catch (FileNotFoundException e) {
-            return new CheckWsResponse(404, "URL '" + url + "' not found");
-        } catch (IOException e) {
-            return new CheckWsResponse(-1, e.getClass().getSimpleName() + ": " + e.getMessage());
-        }
-    }
-
     private void attachAuthenticationHandler(BindingProvider service, String username, String password) {
         service.getBinding().setHandlerChain(Arrays.<Handler>asList(new ClientAuthenticationHandlerWSS(
                 username, password)));
     }
 
-    public static class CheckWsResponse {
-        private final int responseCode;
-        private final String responseMessage;
-
-        public CheckWsResponse(int responseCode, String responseMessage) {
-            this.responseCode = responseCode;
-            this.responseMessage = responseMessage;
-        }
-
-        public int getResponseCode() {
-            return responseCode;
-        }
-
-        @Override
-        public String toString() {
-            return "Check Coverity Web Service Response: {" +
-                           " Code=" + responseCode +
-                           ", Message=\"" + responseMessage + "\" " +
-                           '}';
-        }
-    }
 }
