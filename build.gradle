@@ -8,14 +8,10 @@ buildscript {
 }
 plugins { id 'groovy' }
 
+group = 'com.sig.integration'
 version = '0.0.1-SNAPSHOT'
 
 apply plugin: 'com.blackducksoftware.integration.library'
-
-project.afterEvaluate {
-    // the common library plugin sets the group to com.blackducksoftware.integration so we have to override it
-    project.group = 'com.sig.integration'
-}
 
 dependencies {
     //    compile 'com.blackducksoftware.integration:integration-common:9.2.0'
