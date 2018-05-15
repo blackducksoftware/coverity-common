@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.blackducksoftware.integration.builder.AbstractBuilder;
+import com.blackducksoftware.integration.rest.credentials.CredentialsBuilder;
 
 public class CoverityServerConfigBuilder extends AbstractBuilder<CoverityServerConfig> {
     private final CoverityServerConfigValidator coverityServerConfigValidator;
@@ -57,7 +58,10 @@ public class CoverityServerConfigBuilder extends AbstractBuilder<CoverityServerC
             uRL = new URL(url);
         } catch (MalformedURLException e) {
         }
-        return new CoverityServerConfig(uRL, username, password);
+        CredentialsBuilder credentialsBuilder = new CredentialsBuilder();
+        credentialsBuilder.setUsername(username);
+        credentialsBuilder.setPassword(password);
+        return new CoverityServerConfig(uRL, credentialsBuilder.buildObject());
     }
 
     public CoverityServerConfigBuilder url(String url) {

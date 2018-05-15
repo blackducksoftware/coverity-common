@@ -28,7 +28,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.validator.CredentialsValidator;
+import com.blackducksoftware.integration.rest.credentials.CredentialsValidator;
 import com.blackducksoftware.integration.validator.AbstractValidator;
 import com.blackducksoftware.integration.validator.ValidationResult;
 import com.blackducksoftware.integration.validator.ValidationResultEnum;

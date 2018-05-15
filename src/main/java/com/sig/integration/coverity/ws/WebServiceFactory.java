@@ -34,6 +34,8 @@ import javax.xml.ws.soap.SOAPFaultException;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.blackducksoftware.integration.exception.EncryptionException;
+import com.blackducksoftware.integration.log.IntLogger;
 import com.sig.integration.coverity.config.CoverityServerConfig;
 import com.sig.integration.coverity.exception.CoverityIntegrationException;
 import com.sig.integration.coverity.ws.v9.ConfigurationService;
@@ -48,16 +50,22 @@ public class WebServiceFactory {
     public static final String CONFIGURATION_SERVICE_V9_WSDL = "/ws/v9/configurationservice?wsdl";
 
     private final CoverityServerConfig coverityServerConfig;
+    private final IntLogger logger;
 
-    public WebServiceFactory(CoverityServerConfig coverityServerConfig) {
+    public WebServiceFactory(CoverityServerConfig coverityServerConfig, IntLogger logger) {
         this.coverityServerConfig = coverityServerConfig;
+        this.logger = logger;
     }
 
     public CoverityServerConfig getCoverityServerConfig() {
         return coverityServerConfig;
     }
 
-    public DefectService createDefectService() throws MalformedURLException {
+    public IntLogger getLogger() {
+        return logger;
+    }
+
+    public DefectService createDefectService() throws MalformedURLException, EncryptionException {
         DefectServiceService defectServiceService = new DefectServiceService(
                 new URL(coverityServerConfig.getUrl(), DEFECT_SERVICE_V9_WSDL),
                 new QName(COVERITY_V9_NAMESPACE, "DefectServiceService"));
@@ -68,7 +76,12 @@ public class WebServiceFactory {
         return defectService;
     }
 
-    public ConfigurationService createConfigurationService() throws MalformedURLException {
+    public DefectServiceWrapper createDefectServiceWrapper() throws MalformedURLException, EncryptionException {
+        DefectServiceWrapper defectServiceWrapper = new DefectServiceWrapper(logger, createDefectService());
+        return defectServiceWrapper;
+    }
+
+    public ConfigurationService createConfigurationService() throws MalformedURLException, EncryptionException {
         ConfigurationServiceService configurationServiceService = new ConfigurationServiceService(
                 new URL(coverityServerConfig.getUrl(), CONFIGURATION_SERVICE_V9_WSDL),
                 new QName(COVERITY_V9_NAMESPACE, "ConfigurationServiceService"));
@@ -79,11 +92,11 @@ public class WebServiceFactory {
         return configurationService;
     }
 
-    public void connect() throws MalformedURLException, CoverityIntegrationException, CovRemoteServiceException_Exception {
+    public void connect() throws MalformedURLException, CoverityIntegrationException, EncryptionException {
         ConfigurationService configurationService = createConfigurationService();
         try {
             configurationService.getUser(coverityServerConfig.getUsername());
-        } catch (SOAPFaultException e) {
+        } catch (SOAPFaultException | CovRemoteServiceException_Exception e) {
             if (StringUtils.isNotBlank(e.getMessage())) {
                 throw new CoverityIntegrationException(e.getMessage(), e);
             }

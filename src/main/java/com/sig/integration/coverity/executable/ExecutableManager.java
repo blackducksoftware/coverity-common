@@ -55,11 +55,10 @@ public class ExecutableManager extends EnvironmentContributor {
                 errorOutputThread.start();
                 try {
                     final int returnCode = process.waitFor();
-                    logger.info("Executable finished: " + returnCode);
-
                     standardOutputThread.join();
                     errorOutputThread.join();
-
+                    
+                    logger.info("Executable finished: " + returnCode);
                     return returnCode;
                 } finally {
                     // All processes and threads should be closed before we leave

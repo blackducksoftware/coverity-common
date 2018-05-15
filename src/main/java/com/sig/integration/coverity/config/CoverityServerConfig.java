@@ -26,30 +26,41 @@ package com.sig.integration.coverity.config;
 import java.io.Serializable;
 import java.net.URL;
 
+import com.blackducksoftware.integration.exception.EncryptionException;
+import com.blackducksoftware.integration.rest.credentials.Credentials;
 import com.blackducksoftware.integration.util.Stringable;
 
 public class CoverityServerConfig extends Stringable implements Serializable {
     private static final long serialVersionUID = 8314444738247849945L;
 
     private final URL url;
-    private final String username;
-    private final String password;
+    private final Credentials coverityCredentials;
 
-    public CoverityServerConfig(URL url, String username, String password) {
+    public CoverityServerConfig(URL url, Credentials coverityCredentials) {
         this.url = url;
-        this.username = username;
-        this.password = password;
+        this.coverityCredentials = coverityCredentials;
     }
 
     public URL getUrl() {
         return url;
     }
 
-    public String getUsername() {
-        return username;
+    public Credentials getCoverityCredentials() {
+        return coverityCredentials;
     }
 
-    public String getPassword() {
-        return password;
+    public String getUsername() {
+        if (null != coverityCredentials) {
+            return coverityCredentials.getUsername();
+        }
+        return null;
     }
+
+    public String getPassword() throws EncryptionException {
+        if (null != coverityCredentials) {
+            return coverityCredentials.getDecryptedPassword();
+        }
+        return null;
+    }
+
 }
