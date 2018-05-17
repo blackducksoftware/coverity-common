@@ -46,7 +46,7 @@ public class DefectServiceWrapper {
         this.defectService = defectService;
     }
 
-    public List<MergedDefectDataObj> getDefectsForStreams(String streamName, MergedDefectFilterSpecDataObj filter) throws CoverityIntegrationException {
+    public List<MergedDefectDataObj> getDefectsForStream(String streamName, MergedDefectFilterSpecDataObj filter) throws CoverityIntegrationException {
         List<MergedDefectDataObj> mergeList = new ArrayList<MergedDefectDataObj>();
         try {
             StreamIdDataObj streamId = new StreamIdDataObj();
