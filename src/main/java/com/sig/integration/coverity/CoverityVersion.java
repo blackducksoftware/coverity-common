@@ -92,7 +92,7 @@ public class CoverityVersion implements Comparable<CoverityVersion>, Serializabl
 
     @Override
     public String toString() {
-        if (isSrmVersion && !StringUtils.isEmpty(srmVersion)) {
+        if (isSrmVersion && StringUtils.isNotBlank(srmVersion)) {
             return srmVersion;
         }
 
