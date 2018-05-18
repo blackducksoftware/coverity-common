@@ -38,10 +38,6 @@ class CoverityServerVerifierTest {
         } catch (CoverityIntegrationException e) {
             assertTrue(e.getMessage().contains("The Url does not appear to be a Coverity server"))
         }
-
-        setResponse(new MockResponse().setResponseCode(200))
-        coverityServerVerifier = new CoverityServerVerifier()
-        coverityServerVerifier.verifyIsCoverityServer(server.url(WebServiceFactory.CONFIGURATION_SERVICE_V9_WSDL).url())
     }
 
     @Test
