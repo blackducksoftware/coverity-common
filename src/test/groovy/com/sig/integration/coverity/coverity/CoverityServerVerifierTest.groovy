@@ -44,6 +44,14 @@ class CoverityServerVerifierTest {
         coverityServerVerifier.verifyIsCoverityServer(server.url(WebServiceFactory.CONFIGURATION_SERVICE_V9_WSDL).url())
     }
 
+    @Test
+    public void testIsCoverityServer() {
+        setResponse(new MockResponse().setResponseCode(200))
+        CoverityServerVerifier coverityServerVerifier = new CoverityServerVerifier()
+        coverityServerVerifier.verifyIsCoverityServer(server.url(WebServiceFactory.CONFIGURATION_SERVICE_V9_WSDL).url())
+    }
+
+
     private void setResponse(MockResponse response) {
         final Dispatcher dispatcher = new Dispatcher() {
             @Override
