@@ -1,4 +1,4 @@
-package com.sig.integration.coverity.coverity
+package com.synopsys.integration.coverity
 
 import com.sig.integration.coverity.CoverityServerVerifier
 import com.sig.integration.coverity.exception.CoverityIntegrationException

@@ -1,4 +1,4 @@
-package com.sig.integration.coverity.coverity
+package com.synopsys.integration.coverity
 
 import com.sig.integration.coverity.CoverityVersion
 import org.junit.Test
