@@ -115,7 +115,7 @@ public class ExecutableManager extends EnvironmentContributor {
                 }
             }
             if (StringUtils.isBlank(toolPath)) {
-                throw new ExecutableException(String.format("The  Coverity Static Analysis bin directory '%s' does not contain a tool named %s.", coverityBinDirectory.getAbsolutePath(), toolName));
+                throw new ExecutableException(String.format("The  Coverity Static Analysis bin directory '%s' does not contain a tool named '%s'.", coverityBinDirectory.getAbsolutePath(), toolName));
             }
             arguments.set(0, coverityBinDirectory.getAbsolutePath() + File.separator + arguments.get(0));
         }
