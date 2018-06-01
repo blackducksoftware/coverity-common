@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.sig.integration.coverity.config;
+package com.synopsys.integration.coverity.config;
 
 import java.net.MalformedURLException;
 import java.net.URL;

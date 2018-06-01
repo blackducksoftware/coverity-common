@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.sig.integration.coverity.config;
+package com.synopsys.integration.coverity.config;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -33,7 +33,7 @@ import com.blackducksoftware.integration.validator.AbstractValidator;
 import com.blackducksoftware.integration.validator.ValidationResult;
 import com.blackducksoftware.integration.validator.ValidationResultEnum;
 import com.blackducksoftware.integration.validator.ValidationResults;
-import com.sig.integration.coverity.CoverityServerVerifier;
+import com.synopsys.integration.coverity.CoverityServerVerifier;
 
 public class CoverityServerConfigValidator extends AbstractValidator {
 

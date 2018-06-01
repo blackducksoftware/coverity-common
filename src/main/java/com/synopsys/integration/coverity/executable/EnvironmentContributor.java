@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.sig.integration.coverity.executable;
+package com.synopsys.integration.coverity.executable;
 
 import java.util.Map;
 

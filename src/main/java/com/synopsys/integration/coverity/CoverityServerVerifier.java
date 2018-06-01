@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.sig.integration.coverity;
+package com.synopsys.integration.coverity;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -30,8 +30,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.sig.integration.coverity.exception.CoverityIntegrationException;
-import com.sig.integration.coverity.ws.WebServiceFactory;
+import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
+import com.synopsys.integration.coverity.ws.WebServiceFactory;
 
 public class CoverityServerVerifier {
 

@@ -22,4 +22,4 @@
  * under the License.
  */
 @javax.xml.bind.annotation.XmlSchema(namespace = "http://ws.coverity.com/v9")
-package com.sig.integration.coverity.ws.v9;
+package com.synopsys.integration.coverity.ws.v9;

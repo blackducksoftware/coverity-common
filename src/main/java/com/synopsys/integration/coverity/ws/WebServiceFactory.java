@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.sig.integration.coverity.ws;
+package com.synopsys.integration.coverity.ws;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -36,13 +36,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.log.IntLogger;
-import com.sig.integration.coverity.config.CoverityServerConfig;
-import com.sig.integration.coverity.exception.CoverityIntegrationException;
-import com.sig.integration.coverity.ws.v9.ConfigurationService;
-import com.sig.integration.coverity.ws.v9.ConfigurationServiceService;
-import com.sig.integration.coverity.ws.v9.CovRemoteServiceException_Exception;
-import com.sig.integration.coverity.ws.v9.DefectService;
-import com.sig.integration.coverity.ws.v9.DefectServiceService;
+import com.synopsys.integration.coverity.config.CoverityServerConfig;
+import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
+import com.synopsys.integration.coverity.ws.v9.ConfigurationService;
+import com.synopsys.integration.coverity.ws.v9.ConfigurationServiceService;
+import com.synopsys.integration.coverity.ws.v9.CovRemoteServiceException_Exception;
+import com.synopsys.integration.coverity.ws.v9.DefectService;
+import com.synopsys.integration.coverity.ws.v9.DefectServiceService;
 
 public class WebServiceFactory {
     public static final String COVERITY_V9_NAMESPACE = "http://ws.coverity.com/v9";

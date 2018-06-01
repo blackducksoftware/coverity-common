@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.sig.integration.coverity.ws;
+package com.synopsys.integration.coverity.ws;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

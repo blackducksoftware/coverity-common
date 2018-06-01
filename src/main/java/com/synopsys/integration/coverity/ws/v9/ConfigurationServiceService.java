@@ -22,7 +22,7 @@
  * under the License.
  */
 
-package com.sig.integration.coverity.ws.v9;
+package com.synopsys.integration.coverity.ws.v9;
 
 import java.net.MalformedURLException;
 import java.net.URL;

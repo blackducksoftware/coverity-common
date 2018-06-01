@@ -1,6 +1,6 @@
-package com.sig.integration.coverity.executable
+package com.synopsys.integration.coverity.executable
 
-import com.sig.integration.coverity.exception.ExecutableException
+import com.synopsys.integration.coverity.exception.ExecutableException
 import org.apache.commons.lang3.StringUtils
 import org.junit.Assert
 import org.junit.Rule

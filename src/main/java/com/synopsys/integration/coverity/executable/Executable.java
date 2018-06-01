@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.sig.integration.coverity.executable;
+package com.synopsys.integration.coverity.executable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.sig.integration.coverity.exception.ExecutableException;
+import com.synopsys.integration.coverity.exception.ExecutableException;
 
 public class Executable extends EnvironmentContributor {
     public static final String MASKED_PASSWORD = "********";

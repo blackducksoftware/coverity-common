@@ -21,21 +21,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.sig.integration.coverity.ws;
+package com.synopsys.integration.coverity.ws;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.blackducksoftware.integration.log.IntLogger;
-import com.sig.integration.coverity.exception.CoverityIntegrationException;
-import com.sig.integration.coverity.ws.v9.CovRemoteServiceException_Exception;
-import com.sig.integration.coverity.ws.v9.DefectService;
-import com.sig.integration.coverity.ws.v9.MergedDefectDataObj;
-import com.sig.integration.coverity.ws.v9.MergedDefectFilterSpecDataObj;
-import com.sig.integration.coverity.ws.v9.MergedDefectsPageDataObj;
-import com.sig.integration.coverity.ws.v9.PageSpecDataObj;
-import com.sig.integration.coverity.ws.v9.SnapshotScopeSpecDataObj;
-import com.sig.integration.coverity.ws.v9.StreamIdDataObj;
+import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
+import com.synopsys.integration.coverity.ws.v9.CovRemoteServiceException_Exception;
+import com.synopsys.integration.coverity.ws.v9.DefectService;
+import com.synopsys.integration.coverity.ws.v9.MergedDefectDataObj;
+import com.synopsys.integration.coverity.ws.v9.MergedDefectFilterSpecDataObj;
+import com.synopsys.integration.coverity.ws.v9.MergedDefectsPageDataObj;
+import com.synopsys.integration.coverity.ws.v9.PageSpecDataObj;
+import com.synopsys.integration.coverity.ws.v9.SnapshotScopeSpecDataObj;
+import com.synopsys.integration.coverity.ws.v9.StreamIdDataObj;
 
 public class DefectServiceWrapper {
     private final IntLogger logger;

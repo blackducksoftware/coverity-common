@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.sig.integration.coverity;
+package com.synopsys.integration.coverity;
 
 import java.io.Serializable;
 import java.util.Optional;

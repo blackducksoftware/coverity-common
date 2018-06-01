@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.sig.integration.coverity.executable;
+package com.synopsys.integration.coverity.executable;
 
 import java.io.File;
 import java.io.InputStream;
@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.blackducksoftware.integration.log.IntLogger;
-import com.sig.integration.coverity.exception.ExecutableException;
-import com.sig.integration.coverity.exception.ExecutableRunnerException;
+import com.synopsys.integration.coverity.exception.ExecutableException;
+import com.synopsys.integration.coverity.exception.ExecutableRunnerException;
 
 public class ExecutableManager extends EnvironmentContributor {
     private final File coverityStaticAnalysisDirectory;
