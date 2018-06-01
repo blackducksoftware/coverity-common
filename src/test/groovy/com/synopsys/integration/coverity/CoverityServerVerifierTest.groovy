@@ -1,6 +1,5 @@
 package com.synopsys.integration.coverity
 
-import com.synopsys.integration.coverity.CoverityServerVerifier
 import com.synopsys.integration.coverity.exception.CoverityIntegrationException
 import com.synopsys.integration.coverity.ws.WebServiceFactory
 import okhttp3.mockwebserver.Dispatcher

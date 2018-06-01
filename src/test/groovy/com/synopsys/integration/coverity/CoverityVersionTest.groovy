@@ -1,6 +1,5 @@
 package com.synopsys.integration.coverity
 
-import com.synopsys.integration.coverity.CoverityVersion
 import org.junit.Test
 
 import static org.junit.Assert.*

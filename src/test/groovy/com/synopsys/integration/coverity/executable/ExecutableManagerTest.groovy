@@ -19,9 +19,12 @@ class ExecutableManagerTest {
     @Before
     public void setup() {
         File directory = temporaryFolder.newFolder();
-        coverityStaticAnalysisDirectory = new File(directory, "coverity-analysis");
+        coverityStaticAnalysisDirectory = new File(directory, "common-coverity-analysis");
         coverityStaticAnalysisBinDirectory = new File(coverityStaticAnalysisDirectory, "bin");
         coverityStaticAnalysisBinDirectory.mkdirs();
+
+        File coverityTool = new File(coverityStaticAnalysisBinDirectory, "tool");
+        coverityTool.createNewFile();
     }
 
     @Test
@@ -71,11 +74,31 @@ class ExecutableManagerTest {
     }
 
     @Test
+    public void testAddCoverityBinToPathWithArgumentToolDoenstExist() {
+        File directory = temporaryFolder.newFolder();
+        File coverityStaticAnalysisDirectory = new File(directory, "coverity-analysis");
+        File coverityStaticAnalysisBinDirectory = new File(coverityStaticAnalysisDirectory, "bin");
+        coverityStaticAnalysisBinDirectory.mkdirs();
+
+        ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
+        List<String> arguments = new ArrayList<String>();
+        arguments.add("test");
+        try {
+            executableManager.addCoverityBinToArguments(arguments);
+        } catch (ExecutableException e) {
+            assertNotNull(e);
+        }
+    }
+
+    @Test
     public void testAddCoverityBinToPathWithArgument() {
         File directory = temporaryFolder.newFolder();
         File coverityStaticAnalysisDirectory = new File(directory, "coverity-analysis");
         File coverityStaticAnalysisBinDirectory = new File(coverityStaticAnalysisDirectory, "bin");
         coverityStaticAnalysisBinDirectory.mkdirs();
+
+        File coverityTool = new File(coverityStaticAnalysisBinDirectory, "test");
+        coverityTool.createNewFile();
 
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
         List<String> arguments = new ArrayList<String>();
@@ -109,13 +132,13 @@ class ExecutableManagerTest {
 
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
 
-        List<String> arguments = Arrays.asList("test", "--pa", "secretPassword", "things");
+        List<String> arguments = Arrays.asList("tool", "--pa", "secretPassword", "things");
         Executable executable = new Executable(arguments, workingDirectory);
         ProcessBuilder processBuilder = executableManager.createProcessBuilder(executable);
 
         assertEquals(workingDirectory, processBuilder.directory());
 
-        List<String> expectedArguments = Arrays.asList(coverityStaticAnalysisBinDirectory.getAbsolutePath() + File.separator + "test", "things");
+        List<String> expectedArguments = Arrays.asList(coverityStaticAnalysisBinDirectory.getAbsolutePath() + File.separator + "tool", "things");
         assertEquals(expectedArguments, processBuilder.command());
 
         Map<String, String> environment = new HashMap<>();
@@ -130,13 +153,13 @@ class ExecutableManagerTest {
 
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
 
-        List<String> arguments = Arrays.asList("--pa", "secretPassword", "test", "things");
+        List<String> arguments = Arrays.asList("tool", "things", "--pa", "secretPassword");
         Executable executable = new Executable(arguments, workingDirectory);
         ProcessBuilder processBuilder = executableManager.createProcessBuilder(executable);
 
         assertEquals(workingDirectory, processBuilder.directory());
 
-        List<String> expectedArguments = Arrays.asList(coverityStaticAnalysisBinDirectory.getAbsolutePath() + File.separator + "test", "things");
+        List<String> expectedArguments = Arrays.asList(coverityStaticAnalysisBinDirectory.getAbsolutePath() + File.separator + "tool", "things");
         assertEquals(expectedArguments, processBuilder.command());
 
         Map<String, String> environment = new HashMap<>();
@@ -151,7 +174,7 @@ class ExecutableManagerTest {
 
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
 
-        List<String> arguments = Arrays.asList("test", "things");
+        List<String> arguments = Arrays.asList("tool", "things");
         Map<String, String> preEnvironment = new HashMap<>();
         preEnvironment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "password");
 
@@ -160,7 +183,7 @@ class ExecutableManagerTest {
 
         assertEquals(workingDirectory, processBuilder.directory());
 
-        List<String> expectedArguments = Arrays.asList(coverityStaticAnalysisBinDirectory.getAbsolutePath() + File.separator + "test", "things");
+        List<String> expectedArguments = Arrays.asList(coverityStaticAnalysisBinDirectory.getAbsolutePath() + File.separator + "tool", "things");
         assertEquals(expectedArguments, processBuilder.command());
 
         Map<String, String> environment = new HashMap<>();
@@ -175,7 +198,7 @@ class ExecutableManagerTest {
 
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
 
-        List<String> arguments = Arrays.asList("--pa", "secretPassword", "test", "things");
+        List<String> arguments = Arrays.asList("tool", "--pa", "secretPassword", "things");
         Map<String, String> preEnvironment = new HashMap<>();
         preEnvironment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "password");
 
@@ -184,7 +207,7 @@ class ExecutableManagerTest {
 
         assertEquals(workingDirectory, processBuilder.directory());
 
-        List<String> expectedArguments = Arrays.asList(coverityStaticAnalysisBinDirectory.getAbsolutePath() + File.separator + "test", "things");
+        List<String> expectedArguments = Arrays.asList(coverityStaticAnalysisBinDirectory.getAbsolutePath() + File.separator + "tool", "things");
         assertEquals(expectedArguments, processBuilder.command());
 
         Map<String, String> environment = new HashMap<>();
@@ -199,7 +222,7 @@ class ExecutableManagerTest {
 
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
 
-        List<String> arguments = Arrays.asList("test", "--pa", "secretPassword", "things", "--password", "secret");
+        List<String> arguments = Arrays.asList("tool", "--pa", "secretPassword", "things", "--password", "secret");
         Executable executable = new Executable(arguments, workingDirectory);
         try {
             executableManager.createProcessBuilder(executable);

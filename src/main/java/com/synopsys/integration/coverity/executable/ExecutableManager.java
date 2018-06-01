@@ -27,7 +27,11 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.blackducksoftware.integration.log.IntLogger;
 import com.synopsys.integration.coverity.exception.ExecutableException;
@@ -57,7 +61,7 @@ public class ExecutableManager extends EnvironmentContributor {
                     final int returnCode = process.waitFor();
                     standardOutputThread.join();
                     errorOutputThread.join();
-                    
+
                     logger.info("Executable finished: " + returnCode);
                     return returnCode;
                 } finally {
@@ -102,6 +106,17 @@ public class ExecutableManager extends EnvironmentContributor {
             throw new ExecutableException(String.format("The  Coverity Static Analysis bin directory '%s' does not exist, or is not a directory.", coverityBinDirectory.getAbsolutePath()));
         }
         if (!arguments.isEmpty()) {
+            String toolPath = null;
+            String toolName = FilenameUtils.removeExtension(arguments.get(0).toLowerCase(Locale.ENGLISH));
+            for (File toolFile : coverityBinDirectory.listFiles()) {
+                String currentToolName = FilenameUtils.removeExtension(toolFile.getName());
+                if (currentToolName.equalsIgnoreCase(toolName)) {
+                    toolPath = toolFile.getAbsolutePath();
+                }
+            }
+            if (StringUtils.isBlank(toolPath)) {
+                throw new ExecutableException(String.format("The  Coverity Static Analysis bin directory '%s' does not contain a tool named %s.", coverityBinDirectory.getAbsolutePath(), toolName));
+            }
             arguments.set(0, coverityBinDirectory.getAbsolutePath() + File.separator + arguments.get(0));
         }
     }
