@@ -13,6 +13,8 @@ version = '0.0.1'
 
 apply plugin: 'com.blackducksoftware.integration.library'
 
+nexusStaging { packageGroup = 'com.synopsys' }
+
 dependencies {
     compile 'com.blackducksoftware.integration:integration-rest:0.0.1'
     compile 'com.sun.xml.xws:xws-security:3.0'
