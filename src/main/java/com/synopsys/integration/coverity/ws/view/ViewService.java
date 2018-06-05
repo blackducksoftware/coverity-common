@@ -90,7 +90,7 @@ public class ViewService {
     }
 
     public ViewContents getViewContents(String projectId, String connectView, int pageSize, int offset) throws IOException, URISyntaxException, IntegrationException {
-        String viewsContentsUri = restConnection.baseUrl.toURI().toString() + "api/viewContents/issues/v1/" + connectView;
+        String viewsContentsUri = restConnection.baseUrl.toURI().toString() + "/api/viewContents/issues/v1/" + connectView;
 
         Request.Builder builder = new Request.Builder(viewsContentsUri);
         builder.addQueryParameter("projectId", projectId);
