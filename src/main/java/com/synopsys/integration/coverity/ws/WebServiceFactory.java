@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.log.IntLogger;
+import com.blackducksoftware.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.coverity.config.CoverityServerConfig;
 import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
 import com.synopsys.integration.coverity.ws.v9.ConfigurationService;
@@ -43,6 +44,7 @@ import com.synopsys.integration.coverity.ws.v9.ConfigurationServiceService;
 import com.synopsys.integration.coverity.ws.v9.CovRemoteServiceException_Exception;
 import com.synopsys.integration.coverity.ws.v9.DefectService;
 import com.synopsys.integration.coverity.ws.v9.DefectServiceService;
+import com.synopsys.integration.coverity.ws.view.ViewService;
 
 public class WebServiceFactory {
     public static final String COVERITY_V9_NAMESPACE = "http://ws.coverity.com/v9";
@@ -90,6 +92,12 @@ public class WebServiceFactory {
         attachAuthenticationHandler((BindingProvider) configurationService, coverityServerConfig.getUsername(), coverityServerConfig.getPassword());
 
         return configurationService;
+    }
+
+    public ViewService createViewService() throws MalformedURLException, EncryptionException {
+        CredentialsRestConnection credentialsRestConnection = new CredentialsRestConnection(logger, coverityServerConfig.getUrl(), coverityServerConfig.getUsername(), coverityServerConfig.getPassword(), 300, ProxyInfo.NO_PROXY_INFO);
+        ViewService viewService = new ViewService(logger, credentialsRestConnection);
+        return viewService;
     }
 
     public void connect() throws MalformedURLException, CoverityIntegrationException, EncryptionException {
