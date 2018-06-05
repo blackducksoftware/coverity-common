@@ -23,11 +23,19 @@
  */
 package com.synopsys.integration.coverity.ws.view;
 
-import java.util.List;
+public class ViewRow {
+    public Long cid;
+    public String displayType;
+    public String displayImpact;
+    public String status;
+    public String firstDetected;
+    public String owner;
+    public String classification;
+    public String severity;
+    public String action;
+    public String displayComponent;
+    public String displayCategory;
+    public String displayFile;
+    public String displayFunction;
 
-public class ViewContents {
-    public Long totalRows;
-    public Long rowsOffset;
-    public List<ViewColumn> columns;
-    public List<ViewRow> rows;
 }

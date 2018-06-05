@@ -25,6 +25,7 @@ package com.synopsys.integration.coverity.ws.view;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,7 +91,7 @@ public class ViewService {
     }
 
     public ViewContents getViewContents(String projectId, String connectView, int pageSize, int offset) throws IOException, URISyntaxException, IntegrationException {
-        String viewsContentsUri = restConnection.baseUrl.toURI().toString() + "/api/viewContents/issues/v1/" + connectView;
+        String viewsContentsUri = restConnection.baseUrl.toURI().toString() + "/api/viewContents/issues/v1/" + URLEncoder.encode(connectView, "UTF-8");
 
         Request.Builder builder = new Request.Builder(viewsContentsUri);
         builder.addQueryParameter("projectId", projectId);

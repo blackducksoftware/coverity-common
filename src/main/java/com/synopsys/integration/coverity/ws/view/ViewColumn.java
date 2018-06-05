@@ -23,11 +23,7 @@
  */
 package com.synopsys.integration.coverity.ws.view;
 
-import java.util.List;
-
-public class ViewContents {
-    public Long totalRows;
-    public Long rowsOffset;
-    public List<ViewColumn> columns;
-    public List<ViewRow> rows;
+public class ViewColumn {
+    public String name;
+    public String label;
 }
