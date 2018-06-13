@@ -36,7 +36,7 @@ public class ExecutableRedirectThread extends Thread {
     private final OutputStream out;
 
     public ExecutableRedirectThread(final InputStream in, final OutputStream out) {
-        super("Executable Redirect Thread");
+        super(Thread.currentThread().getName() + "-Executable Redirect Thread");
         this.in = in;
         this.out = out;
     }
