@@ -47,7 +47,7 @@ public class ViewService {
     private final IntLogger logger;
     private final RestConnection restConnection;
 
-    public ViewService(IntLogger logger, RestConnection restConnection) {
+    public ViewService(final IntLogger logger, final RestConnection restConnection) {
         this.logger = logger;
         this.restConnection = restConnection;
     }
@@ -56,27 +56,27 @@ public class ViewService {
      * Returns a Map of available Coverity connect views, using the numeric identifier as the key and name as value
      */
     public Map<Long, String> getViews() throws IOException, URISyntaxException, IntegrationException {
-        Map<Long, String> views = new HashMap<>();
+        final Map<Long, String> views = new HashMap<>();
         JsonObject json = null;
 
-        String viewsUri = restConnection.baseUrl.toURI().toString() + "/api/views/v1";
+        final String viewsUri = restConnection.baseUrl.toURI().toString() + "/api/views/v1";
 
-        Request.Builder builder = new Request.Builder(viewsUri);
-        Request request = builder.build();
+        final Request.Builder builder = new Request.Builder(viewsUri);
+        final Request request = builder.build();
 
         try (Response response = restConnection.executeRequest(request)) {
-            String jsonString = response.getContentString();
-            JsonParser jsonParser = new JsonParser();
+            final String jsonString = response.getContentString();
+            final JsonParser jsonParser = new JsonParser();
             json = jsonParser.parse(jsonString).getAsJsonObject();
         }
 
-        JsonArray jsonViews = (JsonArray) json.get("views");
-        for (Object view : jsonViews) {
-            JsonObject jsonView = (JsonObject) view;
+        final JsonArray jsonViews = (JsonArray) json.get("views");
+        for (final Object view : jsonViews) {
+            final JsonObject jsonView = (JsonObject) view;
             if (jsonView.has("type")) {
-                JsonElement typeElement = jsonView.get("type");
+                final JsonElement typeElement = jsonView.get("type");
                 if (null != typeElement) {
-                    String type = typeElement.getAsString();
+                    final String type = typeElement.getAsString();
                     if (type.equals("issues") && jsonView.has("id") && jsonView.has("name")) {
                         final Long viewId = Long.valueOf(jsonView.get("id").getAsString());
                         final String viewName = jsonView.get("name").getAsString();
@@ -90,24 +90,22 @@ public class ViewService {
         return views;
     }
 
-    public ViewContents getViewContents(String projectId, String connectView, int pageSize, int offset) throws IOException, URISyntaxException, IntegrationException {
-        String viewsContentsUri = restConnection.baseUrl.toURI().toString() + "/api/viewContents/issues/v1/" + URLEncoder.encode(connectView, "UTF-8");
+    public ViewContents getViewContents(final String projectId, final String connectView, final int pageSize, final int offset) throws IOException, URISyntaxException, IntegrationException {
+        final String viewsContentsUri = restConnection.baseUrl.toURI().toString() + "/api/viewContents/issues/v1/" + URLEncoder.encode(connectView, "UTF-8");
 
-        Request.Builder builder = new Request.Builder(viewsContentsUri);
+        final Request.Builder builder = new Request.Builder(viewsContentsUri);
         builder.addQueryParameter("projectId", projectId);
         builder.addQueryParameter("rowCount", String.valueOf(pageSize));
         builder.addQueryParameter("offset", String.valueOf(offset));
-        Request request = builder.build();
+        final Request request = builder.build();
 
         logger.info("Retrieving View contents from " + viewsContentsUri);
 
-        ViewContents viewContents = null;
-
         try (Response response = restConnection.executeRequest(request)) {
-            String jsonString = response.getContentString();
+            final String jsonString = response.getContentString();
 
-            JsonParser jsonParser = new JsonParser();
-            JsonObject json = jsonParser.parse(jsonString).getAsJsonObject();
+            final JsonParser jsonParser = new JsonParser();
+            final JsonObject json = jsonParser.parse(jsonString).getAsJsonObject();
 
             if (json.has("viewContentsV1")) {
                 return restConnection.gson.fromJson(json.get("viewContentsV1"), ViewContents.class);
