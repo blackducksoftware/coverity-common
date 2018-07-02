@@ -54,7 +54,7 @@ public class WebServiceFactory {
     private final CoverityServerConfig coverityServerConfig;
     private final IntLogger logger;
 
-    public WebServiceFactory(CoverityServerConfig coverityServerConfig, IntLogger logger) {
+    public WebServiceFactory(final CoverityServerConfig coverityServerConfig, final IntLogger logger) {
         this.coverityServerConfig = coverityServerConfig;
         this.logger = logger;
     }
@@ -68,40 +68,40 @@ public class WebServiceFactory {
     }
 
     public DefectService createDefectService() throws MalformedURLException, EncryptionException {
-        DefectServiceService defectServiceService = new DefectServiceService(
+        final DefectServiceService defectServiceService = new DefectServiceService(
                 new URL(coverityServerConfig.getUrl(), DEFECT_SERVICE_V9_WSDL),
                 new QName(COVERITY_V9_NAMESPACE, "DefectServiceService"));
 
-        DefectService defectService = defectServiceService.getDefectServicePort();
+        final DefectService defectService = defectServiceService.getDefectServicePort();
         attachAuthenticationHandler((BindingProvider) defectService, coverityServerConfig.getUsername(), coverityServerConfig.getPassword());
 
         return defectService;
     }
 
     public DefectServiceWrapper createDefectServiceWrapper() throws MalformedURLException, EncryptionException {
-        DefectServiceWrapper defectServiceWrapper = new DefectServiceWrapper(logger, createDefectService());
+        final DefectServiceWrapper defectServiceWrapper = new DefectServiceWrapper(logger, createDefectService());
         return defectServiceWrapper;
     }
 
     public ConfigurationService createConfigurationService() throws MalformedURLException, EncryptionException {
-        ConfigurationServiceService configurationServiceService = new ConfigurationServiceService(
+        final ConfigurationServiceService configurationServiceService = new ConfigurationServiceService(
                 new URL(coverityServerConfig.getUrl(), CONFIGURATION_SERVICE_V9_WSDL),
                 new QName(COVERITY_V9_NAMESPACE, "ConfigurationServiceService"));
 
-        ConfigurationService configurationService = configurationServiceService.getConfigurationServicePort();
+        final ConfigurationService configurationService = configurationServiceService.getConfigurationServicePort();
         attachAuthenticationHandler((BindingProvider) configurationService, coverityServerConfig.getUsername(), coverityServerConfig.getPassword());
 
         return configurationService;
     }
 
     public ViewService createViewService() throws MalformedURLException, EncryptionException {
-        CredentialsRestConnection credentialsRestConnection = new CredentialsRestConnection(logger, coverityServerConfig.getUrl(), coverityServerConfig.getUsername(), coverityServerConfig.getPassword(), 300, ProxyInfo.NO_PROXY_INFO);
-        ViewService viewService = new ViewService(logger, credentialsRestConnection);
+        final CredentialsRestConnection credentialsRestConnection = new CredentialsRestConnection(logger, coverityServerConfig.getUrl(), coverityServerConfig.getUsername(), coverityServerConfig.getPassword(), 300, ProxyInfo.NO_PROXY_INFO);
+        final ViewService viewService = new ViewService(logger, credentialsRestConnection);
         return viewService;
     }
 
     public void connect() throws MalformedURLException, CoverityIntegrationException, EncryptionException {
-        ConfigurationService configurationService = createConfigurationService();
+        final ConfigurationService configurationService = createConfigurationService();
         try {
             configurationService.getUser(coverityServerConfig.getUsername());
         } catch (SOAPFaultException | CovRemoteServiceException_Exception e) {
@@ -112,8 +112,8 @@ public class WebServiceFactory {
         }
     }
 
-    private void attachAuthenticationHandler(BindingProvider service, String username, String password) {
-        service.getBinding().setHandlerChain(Arrays.<Handler>asList(new ClientAuthenticationHandlerWSS(
+    private void attachAuthenticationHandler(final BindingProvider service, final String username, final String password) {
+        service.getBinding().setHandlerChain(Arrays.<Handler> asList(new ClientAuthenticationHandlerWSS(
                 username, password)));
     }
 
