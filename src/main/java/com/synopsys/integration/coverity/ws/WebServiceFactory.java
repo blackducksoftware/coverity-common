@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.rest.proxy.ProxyInfo;
+import com.google.gson.Gson;
 import com.synopsys.integration.coverity.config.CoverityServerConfig;
 import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
 import com.synopsys.integration.coverity.ws.v9.ConfigurationService;
@@ -53,10 +54,12 @@ public class WebServiceFactory {
 
     private final CoverityServerConfig coverityServerConfig;
     private final IntLogger logger;
+    private final Gson gson;
 
     public WebServiceFactory(final CoverityServerConfig coverityServerConfig, final IntLogger logger) {
         this.coverityServerConfig = coverityServerConfig;
         this.logger = logger;
+        this.gson = new Gson();
     }
 
     public CoverityServerConfig getCoverityServerConfig() {
@@ -96,7 +99,7 @@ public class WebServiceFactory {
 
     public ViewService createViewService() throws MalformedURLException, EncryptionException {
         final CredentialsRestConnection credentialsRestConnection = new CredentialsRestConnection(logger, coverityServerConfig.getUrl(), coverityServerConfig.getUsername(), coverityServerConfig.getPassword(), 300, ProxyInfo.NO_PROXY_INFO);
-        final ViewService viewService = new ViewService(logger, credentialsRestConnection);
+        final ViewService viewService = new ViewService(logger, credentialsRestConnection, gson);
         return viewService;
     }
 

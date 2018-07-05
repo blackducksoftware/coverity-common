@@ -34,6 +34,7 @@ import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.blackducksoftware.integration.rest.request.Response;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -46,10 +47,12 @@ import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
 public class ViewService {
     private final IntLogger logger;
     private final RestConnection restConnection;
+    private final Gson gson;
 
-    public ViewService(final IntLogger logger, final RestConnection restConnection) {
+    public ViewService(final IntLogger logger, final RestConnection restConnection, final Gson gson) {
         this.logger = logger;
         this.restConnection = restConnection;
+        this.gson = gson;
     }
 
     /**
@@ -59,7 +62,7 @@ public class ViewService {
         final Map<Long, String> views = new HashMap<>();
         JsonObject json = null;
 
-        final String viewsUri = restConnection.baseUrl.toURI().toString() + "/api/views/v1";
+        final String viewsUri = restConnection.getBaseUrl().toURI().toString() + "/api/views/v1";
 
         final Request.Builder builder = new Request.Builder(viewsUri);
         final Request request = builder.build();
@@ -91,7 +94,7 @@ public class ViewService {
     }
 
     public ViewContents getViewContents(final String projectId, final String connectView, final int pageSize, final int offset) throws IOException, URISyntaxException, IntegrationException {
-        final String viewsContentsUri = restConnection.baseUrl.toURI().toString() + "/api/viewContents/issues/v1/" + URLEncoder.encode(connectView, "UTF-8");
+        final String viewsContentsUri = restConnection.getBaseUrl().toURI().toString() + "/api/viewContents/issues/v1/" + URLEncoder.encode(connectView, "UTF-8");
 
         final Request.Builder builder = new Request.Builder(viewsContentsUri);
         builder.addQueryParameter("projectId", projectId);
@@ -108,7 +111,7 @@ public class ViewService {
             final JsonObject json = jsonParser.parse(jsonString).getAsJsonObject();
 
             if (json.has("viewContentsV1")) {
-                return restConnection.gson.fromJson(json.get("viewContentsV1"), ViewContents.class);
+                return gson.fromJson(json.get("viewContentsV1"), ViewContents.class);
             } else {
                 logger.error("The View response does not appear to be in the expected format. View response: " + jsonString);
                 throw new CoverityIntegrationException("The View response does not appear to be in the expected format.");

@@ -28,11 +28,12 @@ import java.net.URL;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
-import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 import com.blackducksoftware.integration.rest.proxy.ProxyInfo;
 
 public class CredentialsRestConnection extends RestConnection {
@@ -46,15 +47,16 @@ public class CredentialsRestConnection extends RestConnection {
     }
 
     @Override
-    public void addBuilderAuthentication() throws IntegrationRestException {
+    public void populateHttpClientBuilder(final HttpClientBuilder httpClientBuilder, final RequestConfig.Builder defaultRequestConfigBuilder) throws IntegrationException {
         if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
             final UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
-            getCredentialsProvider().setCredentials(new AuthScope(baseUrl.getHost(), baseUrl.getPort()), creds);
+            getCredentialsProvider().setCredentials(new AuthScope(getBaseUrl().getHost(), getBaseUrl().getPort()), creds);
         }
     }
 
     @Override
-    public void clientAuthenticate() throws IntegrationException {
+    public void completeConnection() throws IntegrationException {
+        // nothing additional needed to connect
     }
 
 }
