@@ -10,7 +10,7 @@ buildscript {
 plugins { id 'groovy' }
 
 group = 'com.synopsys.integration'
-version = '0.0.4'
+version = '0.0.5-SNAPSHOT'
 
 apply plugin: 'com.blackducksoftware.integration.library'
 
