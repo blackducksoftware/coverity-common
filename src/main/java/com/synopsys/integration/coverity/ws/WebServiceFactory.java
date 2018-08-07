@@ -26,6 +26,7 @@ package com.synopsys.integration.coverity.ws;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
@@ -36,7 +37,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.log.IntLogger;
+import com.blackducksoftware.integration.phonehome.PhoneHomeClient;
 import com.blackducksoftware.integration.rest.proxy.ProxyInfo;
+import com.blackducksoftware.integration.util.IntEnvironmentVariables;
 import com.google.gson.Gson;
 import com.synopsys.integration.coverity.config.CoverityServerConfig;
 import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
@@ -115,8 +118,18 @@ public class WebServiceFactory {
         }
     }
 
+    public PhoneHomeService createPhoneHomeService(final IntEnvironmentVariables intEnvironmentVariables, final PhoneHomeClient phoneHomeClient) throws MalformedURLException, EncryptionException {
+        final PhoneHomeService phoneHomeService = new PhoneHomeService(logger, createConfigurationService(), intEnvironmentVariables, phoneHomeClient);
+        return phoneHomeService;
+    }
+
+    public PhoneHomeService createPhoneHomeService(final IntEnvironmentVariables intEnvironmentVariables, final PhoneHomeClient phoneHomeClient, final ExecutorService executorService) throws MalformedURLException, EncryptionException {
+        final PhoneHomeService phoneHomeService = new PhoneHomeService(logger, createConfigurationService(), intEnvironmentVariables, phoneHomeClient, executorService);
+        return phoneHomeService;
+    }
+
     private void attachAuthenticationHandler(final BindingProvider service, final String username, final String password) {
-        service.getBinding().setHandlerChain(Arrays.<Handler> asList(new ClientAuthenticationHandlerWSS(
+        service.getBinding().setHandlerChain(Arrays.<Handler>asList(new ClientAuthenticationHandlerWSS(
                 username, password)));
     }
 
