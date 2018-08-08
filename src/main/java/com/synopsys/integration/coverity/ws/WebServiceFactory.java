@@ -34,10 +34,15 @@ import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.SOAPFaultException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.log.IntLogger;
+import com.blackducksoftware.integration.phonehome.PhoneHomeCallable;
 import com.blackducksoftware.integration.phonehome.PhoneHomeClient;
+import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
+import com.blackducksoftware.integration.phonehome.PhoneHomeService;
+import com.blackducksoftware.integration.phonehome.google.analytics.GoogleAnalyticsConstants;
 import com.blackducksoftware.integration.rest.proxy.ProxyInfo;
 import com.blackducksoftware.integration.util.IntEnvironmentVariables;
 import com.google.gson.Gson;
@@ -58,11 +63,25 @@ public class WebServiceFactory {
     private final CoverityServerConfig coverityServerConfig;
     private final IntLogger logger;
     private final Gson gson;
+    private final IntEnvironmentVariables intEnvironmentVariables;
 
     public WebServiceFactory(final CoverityServerConfig coverityServerConfig, final IntLogger logger) {
+        this(coverityServerConfig, logger, new Gson(), new IntEnvironmentVariables());
+    }
+
+    public WebServiceFactory(final CoverityServerConfig coverityServerConfig, final IntLogger logger, final Gson gson) {
+        this(coverityServerConfig, logger, gson, new IntEnvironmentVariables());
+    }
+
+    public WebServiceFactory(final CoverityServerConfig coverityServerConfig, final IntLogger logger, final IntEnvironmentVariables intEnvironmentVariables) {
+        this(coverityServerConfig, logger, new Gson(), intEnvironmentVariables);
+    }
+
+    public WebServiceFactory(final CoverityServerConfig coverityServerConfig, final IntLogger logger, final Gson gson, final IntEnvironmentVariables intEnvironmentVariables) {
         this.coverityServerConfig = coverityServerConfig;
         this.logger = logger;
-        this.gson = new Gson();
+        this.gson = gson;
+        this.intEnvironmentVariables = intEnvironmentVariables;
     }
 
     public CoverityServerConfig getCoverityServerConfig() {
@@ -100,10 +119,14 @@ public class WebServiceFactory {
         return configurationService;
     }
 
-    public ViewService createViewService() throws MalformedURLException, EncryptionException {
-        final CredentialsRestConnection credentialsRestConnection = new CredentialsRestConnection(logger, coverityServerConfig.getUrl(), coverityServerConfig.getUsername(), coverityServerConfig.getPassword(), 300, ProxyInfo.NO_PROXY_INFO);
+    public ViewService createViewService() throws EncryptionException {
+        final CredentialsRestConnection credentialsRestConnection = createCredentialsRestConnection();
         final ViewService viewService = new ViewService(logger, credentialsRestConnection, gson);
         return viewService;
+    }
+
+    public CredentialsRestConnection createCredentialsRestConnection() throws EncryptionException {
+        return new CredentialsRestConnection(logger, coverityServerConfig.getUrl(), coverityServerConfig.getUsername(), coverityServerConfig.getPassword(), 300, ProxyInfo.NO_PROXY_INFO);
     }
 
     public void connect() throws MalformedURLException, CoverityIntegrationException, EncryptionException {
@@ -118,14 +141,32 @@ public class WebServiceFactory {
         }
     }
 
-    public PhoneHomeService createPhoneHomeService(final IntEnvironmentVariables intEnvironmentVariables, final PhoneHomeClient phoneHomeClient) throws MalformedURLException, EncryptionException {
-        final PhoneHomeService phoneHomeService = new PhoneHomeService(logger, createConfigurationService(), intEnvironmentVariables, phoneHomeClient);
+    public PhoneHomeService createPhoneHomeService() {
+        final PhoneHomeService phoneHomeService = new PhoneHomeService(logger);
         return phoneHomeService;
     }
 
-    public PhoneHomeService createPhoneHomeService(final IntEnvironmentVariables intEnvironmentVariables, final PhoneHomeClient phoneHomeClient, final ExecutorService executorService) throws MalformedURLException, EncryptionException {
-        final PhoneHomeService phoneHomeService = new PhoneHomeService(logger, createConfigurationService(), intEnvironmentVariables, phoneHomeClient, executorService);
+    public PhoneHomeService createPhoneHomeService(final ExecutorService executorService) {
+        final PhoneHomeService phoneHomeService = new PhoneHomeService(logger, executorService);
         return phoneHomeService;
+    }
+
+    public PhoneHomeCallable createCoverityPhoneHomeCallable(final URL productURL, final String artifactId, final String artifactVersion) throws MalformedURLException, EncryptionException {
+        final PhoneHomeCallable phoneHomeCallable = new CoverityPhoneHomeCallable(logger, createPhoneHomeClient(), createConfigurationService(), productURL, artifactId, artifactVersion, intEnvironmentVariables);
+        return phoneHomeCallable;
+    }
+
+    public PhoneHomeCallable createCoverityPhoneHomeCallable(final URL productURL, final String artifactId, final String artifactVersion, final PhoneHomeRequestBody.Builder phoneHomeRequestBodyBuilder)
+            throws MalformedURLException, EncryptionException {
+        final PhoneHomeCallable phoneHomeCallable = new CoverityPhoneHomeCallable(logger, createPhoneHomeClient(), createConfigurationService(), productURL, artifactId, artifactVersion,
+                intEnvironmentVariables, phoneHomeRequestBodyBuilder);
+        return phoneHomeCallable;
+    }
+
+    public PhoneHomeClient createPhoneHomeClient() {
+        final HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+        final String googleAnalyticsTrackingId = GoogleAnalyticsConstants.PRODUCTION_INTEGRATIONS_TRACKING_ID;
+        return new PhoneHomeClient(googleAnalyticsTrackingId, logger, httpClientBuilder, gson);
     }
 
     private void attachAuthenticationHandler(final BindingProvider service, final String username, final String password) {

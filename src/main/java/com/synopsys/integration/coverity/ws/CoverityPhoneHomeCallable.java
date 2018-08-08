@@ -25,9 +25,9 @@
 package com.synopsys.integration.coverity.ws;
 
 import java.net.URL;
-import java.util.concurrent.Callable;
 
 import com.blackducksoftware.integration.log.IntLogger;
+import com.blackducksoftware.integration.phonehome.PhoneHomeCallable;
 import com.blackducksoftware.integration.phonehome.PhoneHomeClient;
 import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
 import com.blackducksoftware.integration.phonehome.enums.ProductIdEnum;
@@ -35,31 +35,30 @@ import com.blackducksoftware.integration.util.IntEnvironmentVariables;
 import com.synopsys.integration.coverity.ws.v9.ConfigurationService;
 import com.synopsys.integration.coverity.ws.v9.VersionDataObj;
 
-public class PhoneHomeCallable implements Callable<Boolean> {
+public class CoverityPhoneHomeCallable extends PhoneHomeCallable {
     private final IntLogger logger;
-    private final PhoneHomeClient client;
     private final ConfigurationService configurationService;
-    private final URL coverityURL;
-    private final String artifactId;
-    private final String artifactVersion;
-    private final IntEnvironmentVariables intEnvironmentVariables;
+    private final PhoneHomeRequestBody.Builder phoneHomeRequestBodyBuilder;
 
-    public PhoneHomeCallable(final IntLogger logger, final PhoneHomeClient client, final ConfigurationService configurationService, final URL coverityURL, final String artifactId, final String artifactVersion,
+    public CoverityPhoneHomeCallable(final IntLogger logger, final PhoneHomeClient client, final ConfigurationService configurationService, final URL coverityURL, final String artifactId, final String artifactVersion,
             final IntEnvironmentVariables intEnvironmentVariables) {
+        super(logger, client, coverityURL, artifactId, artifactVersion, intEnvironmentVariables);
         this.logger = logger;
-        this.client = client;
         this.configurationService = configurationService;
-        this.coverityURL = coverityURL;
-        this.artifactId = artifactId;
-        this.artifactVersion = artifactVersion;
-        this.intEnvironmentVariables = intEnvironmentVariables;
+        this.phoneHomeRequestBodyBuilder = new PhoneHomeRequestBody.Builder();
     }
 
-    public PhoneHomeRequestBody createPhoneHomeRequestBody() {
-        final PhoneHomeRequestBody.Builder phoneHomeRequestBodyBuilder = new PhoneHomeRequestBody.Builder();
-        phoneHomeRequestBodyBuilder.setArtifactId(artifactId);
-        phoneHomeRequestBodyBuilder.setArtifactVersion(artifactVersion);
-        phoneHomeRequestBodyBuilder.setHostName(coverityURL.toString());
+    public CoverityPhoneHomeCallable(final IntLogger logger, final PhoneHomeClient client, final ConfigurationService configurationService, final URL coverityURL, final String artifactId, final String artifactVersion,
+            final IntEnvironmentVariables intEnvironmentVariables, final PhoneHomeRequestBody.Builder phoneHomeRequestBodyBuilder) {
+        super(logger, client, coverityURL, artifactId, artifactVersion, intEnvironmentVariables);
+        this.logger = logger;
+        this.configurationService = configurationService;
+        this.phoneHomeRequestBodyBuilder = phoneHomeRequestBodyBuilder;
+    }
+
+    @Override
+    public PhoneHomeRequestBody.Builder createPhoneHomeRequestBodyBuilder() {
+        phoneHomeRequestBodyBuilder.setCustomerId(PhoneHomeRequestBody.Builder.UNKNOWN_ID);
         phoneHomeRequestBodyBuilder.setProductId(ProductIdEnum.COVERITY);
         try {
             final VersionDataObj versionDataObj = configurationService.getVersion();
@@ -67,22 +66,7 @@ public class PhoneHomeCallable implements Callable<Boolean> {
         } catch (final Exception e) {
             logger.debug("Couldn't get the Coverity version: " + e.getMessage());
         }
-        return phoneHomeRequestBodyBuilder.build();
+        return phoneHomeRequestBodyBuilder;
     }
 
-    @Override
-    public Boolean call() throws Exception {
-        Boolean result = Boolean.FALSE;
-        try {
-            logger.debug("starting phone home");
-            final PhoneHomeRequestBody phoneHomeRequestBody = createPhoneHomeRequestBody();
-            client.postPhoneHomeRequest(phoneHomeRequestBody, intEnvironmentVariables.getVariables());
-            result = Boolean.TRUE;
-            logger.debug("completed phone home");
-        } catch (final Exception ex) {
-            logger.debug("Phone home error.", ex);
-        }
-
-        return result;
-    }
 }
