@@ -23,7 +23,7 @@
  */
 package com.synopsys.integration.coverity.exception;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
+import com.synopsys.integration.exception.IntegrationException;
 
 public class CoverityIntegrationException extends IntegrationException {
 

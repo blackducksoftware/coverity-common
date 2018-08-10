@@ -26,8 +26,8 @@ package com.synopsys.integration.coverity.config;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.blackducksoftware.integration.builder.AbstractBuilder;
-import com.blackducksoftware.integration.rest.credentials.CredentialsBuilder;
+import com.synopsys.integration.builder.AbstractBuilder;
+import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 
 public class CoverityServerConfigBuilder extends AbstractBuilder<CoverityServerConfig> {
     private final CoverityServerConfigValidator coverityServerConfigValidator;
@@ -35,7 +35,7 @@ public class CoverityServerConfigBuilder extends AbstractBuilder<CoverityServerC
     private String username;
     private String password;
 
-    public CoverityServerConfigBuilder(CoverityServerConfigValidator coverityServerConfigValidator) {
+    public CoverityServerConfigBuilder(final CoverityServerConfigValidator coverityServerConfigValidator) {
         this.coverityServerConfigValidator = coverityServerConfigValidator;
     }
 
@@ -56,25 +56,25 @@ public class CoverityServerConfigBuilder extends AbstractBuilder<CoverityServerC
         URL uRL = null;
         try {
             uRL = new URL(url);
-        } catch (MalformedURLException e) {
+        } catch (final MalformedURLException e) {
         }
-        CredentialsBuilder credentialsBuilder = new CredentialsBuilder();
+        final CredentialsBuilder credentialsBuilder = new CredentialsBuilder();
         credentialsBuilder.setUsername(username);
         credentialsBuilder.setPassword(password);
         return new CoverityServerConfig(uRL, credentialsBuilder.buildObject());
     }
 
-    public CoverityServerConfigBuilder url(String url) {
+    public CoverityServerConfigBuilder url(final String url) {
         this.url = url;
         return this;
     }
 
-    public CoverityServerConfigBuilder username(String username) {
+    public CoverityServerConfigBuilder username(final String username) {
         this.username = username;
         return this;
     }
 
-    public CoverityServerConfigBuilder password(String password) {
+    public CoverityServerConfigBuilder password(final String password) {
         this.password = password;
         return this;
     }

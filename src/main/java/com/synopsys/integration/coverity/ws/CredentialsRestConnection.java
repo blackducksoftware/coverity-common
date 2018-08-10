@@ -31,10 +31,10 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.log.IntLogger;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
-import com.blackducksoftware.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.rest.connection.RestConnection;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class CredentialsRestConnection extends RestConnection {
     private final String username;

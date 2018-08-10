@@ -23,9 +23,9 @@
  */
 package com.synopsys.integration.coverity;
 
-import com.blackducksoftware.integration.log.IntLogger;
-import com.blackducksoftware.integration.log.LogLevel;
-import com.blackducksoftware.integration.util.IntEnvironmentVariables;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.log.LogLevel;
+import com.synopsys.integration.util.IntEnvironmentVariables;
 
 public abstract class CoverityIntLogger extends IntLogger {
     @Override

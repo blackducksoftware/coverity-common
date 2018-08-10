@@ -26,14 +26,14 @@ package com.synopsys.integration.coverity.ws;
 
 import java.net.URL;
 
-import com.blackducksoftware.integration.log.IntLogger;
-import com.blackducksoftware.integration.phonehome.PhoneHomeCallable;
-import com.blackducksoftware.integration.phonehome.PhoneHomeClient;
-import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
-import com.blackducksoftware.integration.phonehome.enums.ProductIdEnum;
-import com.blackducksoftware.integration.util.IntEnvironmentVariables;
 import com.synopsys.integration.coverity.ws.v9.ConfigurationService;
 import com.synopsys.integration.coverity.ws.v9.VersionDataObj;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.phonehome.PhoneHomeCallable;
+import com.synopsys.integration.phonehome.PhoneHomeClient;
+import com.synopsys.integration.phonehome.PhoneHomeRequestBody;
+import com.synopsys.integration.phonehome.enums.ProductIdEnum;
+import com.synopsys.integration.util.IntEnvironmentVariables;
 
 public class CoverityPhoneHomeCallable extends PhoneHomeCallable {
     private final IntLogger logger;

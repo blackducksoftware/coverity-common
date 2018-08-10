@@ -26,7 +26,6 @@ package com.synopsys.integration.coverity.ws;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.blackducksoftware.integration.log.IntLogger;
 import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
 import com.synopsys.integration.coverity.ws.v9.CovRemoteServiceException_Exception;
 import com.synopsys.integration.coverity.ws.v9.DefectService;
@@ -36,30 +35,31 @@ import com.synopsys.integration.coverity.ws.v9.MergedDefectsPageDataObj;
 import com.synopsys.integration.coverity.ws.v9.PageSpecDataObj;
 import com.synopsys.integration.coverity.ws.v9.SnapshotScopeSpecDataObj;
 import com.synopsys.integration.coverity.ws.v9.StreamIdDataObj;
+import com.synopsys.integration.log.IntLogger;
 
 public class DefectServiceWrapper {
     private final IntLogger logger;
     private final DefectService defectService;
 
-    public DefectServiceWrapper(IntLogger logger, DefectService defectService) {
+    public DefectServiceWrapper(final IntLogger logger, final DefectService defectService) {
         this.logger = logger;
         this.defectService = defectService;
     }
 
-    public List<MergedDefectDataObj> getDefectsForStream(String streamName, MergedDefectFilterSpecDataObj filter) throws CoverityIntegrationException {
-        List<MergedDefectDataObj> mergeList = new ArrayList<MergedDefectDataObj>();
+    public List<MergedDefectDataObj> getDefectsForStream(final String streamName, final MergedDefectFilterSpecDataObj filter) throws CoverityIntegrationException {
+        final List<MergedDefectDataObj> mergeList = new ArrayList<MergedDefectDataObj>();
         try {
-            StreamIdDataObj streamId = new StreamIdDataObj();
+            final StreamIdDataObj streamId = new StreamIdDataObj();
             streamId.setName(streamName);
-            List<StreamIdDataObj> streamIds = new ArrayList<StreamIdDataObj>();
+            final List<StreamIdDataObj> streamIds = new ArrayList<StreamIdDataObj>();
             streamIds.add(streamId);
 
-            SnapshotScopeSpecDataObj snapshotScope = new SnapshotScopeSpecDataObj();
+            final SnapshotScopeSpecDataObj snapshotScope = new SnapshotScopeSpecDataObj();
             snapshotScope.setShowSelector("last()");
 
-            PageSpecDataObj pageSpec = new PageSpecDataObj();
+            final PageSpecDataObj pageSpec = new PageSpecDataObj();
             // The loop will pull up to the maximum amount of defect, doing per page size
-            int pageSize = 1000; // Size of page to be pulled
+            final int pageSize = 1000; // Size of page to be pulled
             int defectSize = 3000; // Maximum amount of defect to pull
             for (int pageStart = 0; pageStart < defectSize; pageStart += pageSize) {
                 if (pageStart >= pageSize)
@@ -68,11 +68,11 @@ public class DefectServiceWrapper {
                 pageSpec.setPageSize(pageSize);
                 pageSpec.setStartIndex(pageStart);
                 pageSpec.setSortAscending(true);
-                MergedDefectsPageDataObj mergedDefectsForStreams = defectService.getMergedDefectsForStreams(streamIds, filter, pageSpec, snapshotScope);
+                final MergedDefectsPageDataObj mergedDefectsForStreams = defectService.getMergedDefectsForStreams(streamIds, filter, pageSpec, snapshotScope);
                 defectSize = mergedDefectsForStreams.getTotalNumberOfRecords();
                 mergeList.addAll(mergedDefectsForStreams.getMergedDefects());
             }
-        } catch (CovRemoteServiceException_Exception e) {
+        } catch (final CovRemoteServiceException_Exception e) {
             throw new CoverityIntegrationException(String.format("An unexpected error occurred fetching defects for stream %s. %s.", streamName, e.getMessage()), e);
         }
         return mergeList;

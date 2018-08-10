@@ -29,17 +29,17 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.log.IntLogger;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
-import com.blackducksoftware.integration.rest.request.Request;
-import com.blackducksoftware.integration.rest.request.Response;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.rest.connection.RestConnection;
+import com.synopsys.integration.rest.request.Request;
+import com.synopsys.integration.rest.request.Response;
 
 /**
  * Service for interacting with the Coverity Connect Views Service JSON API

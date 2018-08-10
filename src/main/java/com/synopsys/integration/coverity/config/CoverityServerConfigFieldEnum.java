@@ -23,12 +23,12 @@
  */
 package com.synopsys.integration.coverity.config;
 
-import com.blackducksoftware.integration.validator.FieldEnum;
+import com.synopsys.integration.validator.FieldEnum;
 
 public enum CoverityServerConfigFieldEnum implements FieldEnum {
     URL("url");
 
-    private String key;
+    private final String key;
 
     private CoverityServerConfigFieldEnum(final String key) {
         this.key = key;

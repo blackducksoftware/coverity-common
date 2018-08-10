@@ -27,13 +27,13 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.rest.credentials.CredentialsValidator;
-import com.blackducksoftware.integration.validator.AbstractValidator;
-import com.blackducksoftware.integration.validator.ValidationResult;
-import com.blackducksoftware.integration.validator.ValidationResultEnum;
-import com.blackducksoftware.integration.validator.ValidationResults;
 import com.synopsys.integration.coverity.CoverityServerVerifier;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.credentials.CredentialsValidator;
+import com.synopsys.integration.validator.AbstractValidator;
+import com.synopsys.integration.validator.ValidationResult;
+import com.synopsys.integration.validator.ValidationResultEnum;
+import com.synopsys.integration.validator.ValidationResults;
 
 public class CoverityServerConfigValidator extends AbstractValidator {
 
@@ -42,7 +42,7 @@ public class CoverityServerConfigValidator extends AbstractValidator {
     private String username;
     private String password;
 
-    public CoverityServerConfigValidator(CoverityServerVerifier coverityServerVerifier) {
+    public CoverityServerConfigValidator(final CoverityServerVerifier coverityServerVerifier) {
         this.coverityServerVerifier = coverityServerVerifier;
     }
 
@@ -60,7 +60,7 @@ public class CoverityServerConfigValidator extends AbstractValidator {
         return validationResults;
     }
 
-    public void assertURLValid(ValidationResults results, String url) {
+    public void assertURLValid(final ValidationResults results, final String url) {
         if (url == null) {
             results.addResult(CoverityServerConfigFieldEnum.URL, new ValidationResult(ValidationResultEnum.ERROR, "No Coverity URL set."));
             return;
@@ -80,23 +80,23 @@ public class CoverityServerConfigValidator extends AbstractValidator {
         }
     }
 
-    public void assertCredentialsValid(ValidationResults results, String username, String password) {
-        CredentialsValidator credentialsValidator = new CredentialsValidator();
+    public void assertCredentialsValid(final ValidationResults results, final String username, final String password) {
+        final CredentialsValidator credentialsValidator = new CredentialsValidator();
         credentialsValidator.setUsername(username);
         credentialsValidator.setPassword(password);
-        ValidationResults credentialResults = credentialsValidator.assertValid();
+        final ValidationResults credentialResults = credentialsValidator.assertValid();
         results.addAllResults(credentialResults.getResultMap());
     }
 
-    public void setUrl(String url) {
+    public void setUrl(final String url) {
         this.url = url;
     }
 
-    public void setUsername(String username) {
+    public void setUsername(final String username) {
         this.username = username;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 }

@@ -33,18 +33,18 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.blackducksoftware.integration.log.IntLogger;
 import com.synopsys.integration.coverity.exception.ExecutableException;
 import com.synopsys.integration.coverity.exception.ExecutableRunnerException;
+import com.synopsys.integration.log.IntLogger;
 
 public class ExecutableManager extends EnvironmentContributor {
     private final File coverityStaticAnalysisDirectory;
 
-    public ExecutableManager(File coverityStaticAnalysisDirectory) {
+    public ExecutableManager(final File coverityStaticAnalysisDirectory) {
         this.coverityStaticAnalysisDirectory = coverityStaticAnalysisDirectory;
     }
 
-    public int execute(final Executable executable, IntLogger logger, PrintStream standardOutput, PrintStream errorOutput) throws InterruptedException, ExecutableException, ExecutableRunnerException {
+    public int execute(final Executable executable, final IntLogger logger, final PrintStream standardOutput, final PrintStream errorOutput) throws InterruptedException, ExecutableException, ExecutableRunnerException {
         try {
             final ProcessBuilder processBuilder = createProcessBuilder(executable);
             logger.info(String.format("Running executable >%s", executable.getMaskedExecutableArguments(processBuilder.command())));
@@ -84,8 +84,8 @@ public class ExecutableManager extends EnvironmentContributor {
         }
     }
 
-    public ProcessBuilder createProcessBuilder(Executable executable) throws ExecutableException {
-        List<String> processedExecutableArguments = executable.processExecutableArguments();
+    public ProcessBuilder createProcessBuilder(final Executable executable) throws ExecutableException {
+        final List<String> processedExecutableArguments = executable.processExecutableArguments();
         addCoverityBinToArguments(processedExecutableArguments);
         final ProcessBuilder processBuilder = new ProcessBuilder(processedExecutableArguments);
         processBuilder.directory(executable.getWorkingDirectory());
@@ -97,19 +97,19 @@ public class ExecutableManager extends EnvironmentContributor {
         return processBuilder;
     }
 
-    private void addCoverityBinToArguments(List<String> arguments) throws ExecutableException {
+    private void addCoverityBinToArguments(final List<String> arguments) throws ExecutableException {
         if (!coverityStaticAnalysisDirectory.isDirectory()) {
             throw new ExecutableException(String.format("The Coverity Static Analysis directory '%s' does not exist, or is not a directory.", coverityStaticAnalysisDirectory.getAbsolutePath()));
         }
-        File coverityBinDirectory = new File(coverityStaticAnalysisDirectory, "bin");
+        final File coverityBinDirectory = new File(coverityStaticAnalysisDirectory, "bin");
         if (!coverityBinDirectory.isDirectory()) {
             throw new ExecutableException(String.format("The  Coverity Static Analysis bin directory '%s' does not exist, or is not a directory.", coverityBinDirectory.getAbsolutePath()));
         }
         if (!arguments.isEmpty()) {
             String toolPath = null;
-            String toolName = FilenameUtils.removeExtension(arguments.get(0).toLowerCase(Locale.ENGLISH));
-            for (File toolFile : coverityBinDirectory.listFiles()) {
-                String currentToolName = FilenameUtils.removeExtension(toolFile.getName());
+            final String toolName = FilenameUtils.removeExtension(arguments.get(0).toLowerCase(Locale.ENGLISH));
+            for (final File toolFile : coverityBinDirectory.listFiles()) {
+                final String currentToolName = FilenameUtils.removeExtension(toolFile.getName());
                 if (currentToolName.equalsIgnoreCase(toolName)) {
                     toolPath = toolFile.getAbsolutePath();
                 }

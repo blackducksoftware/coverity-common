@@ -26,9 +26,9 @@ package com.synopsys.integration.coverity.config;
 import java.io.Serializable;
 import java.net.URL;
 
-import com.blackducksoftware.integration.exception.EncryptionException;
-import com.blackducksoftware.integration.rest.credentials.Credentials;
-import com.blackducksoftware.integration.util.Stringable;
+import com.synopsys.integration.exception.EncryptionException;
+import com.synopsys.integration.rest.credentials.Credentials;
+import com.synopsys.integration.util.Stringable;
 
 public class CoverityServerConfig extends Stringable implements Serializable {
     private static final long serialVersionUID = 8314444738247849945L;
@@ -36,7 +36,7 @@ public class CoverityServerConfig extends Stringable implements Serializable {
     private final URL url;
     private final Credentials coverityCredentials;
 
-    public CoverityServerConfig(URL url, Credentials coverityCredentials) {
+    public CoverityServerConfig(final URL url, final Credentials coverityCredentials) {
         this.url = url;
         this.coverityCredentials = coverityCredentials;
     }

@@ -36,15 +36,6 @@ import javax.xml.ws.soap.SOAPFaultException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import com.blackducksoftware.integration.exception.EncryptionException;
-import com.blackducksoftware.integration.log.IntLogger;
-import com.blackducksoftware.integration.phonehome.PhoneHomeCallable;
-import com.blackducksoftware.integration.phonehome.PhoneHomeClient;
-import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
-import com.blackducksoftware.integration.phonehome.PhoneHomeService;
-import com.blackducksoftware.integration.phonehome.google.analytics.GoogleAnalyticsConstants;
-import com.blackducksoftware.integration.rest.proxy.ProxyInfo;
-import com.blackducksoftware.integration.util.IntEnvironmentVariables;
 import com.google.gson.Gson;
 import com.synopsys.integration.coverity.config.CoverityServerConfig;
 import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
@@ -54,6 +45,15 @@ import com.synopsys.integration.coverity.ws.v9.CovRemoteServiceException_Excepti
 import com.synopsys.integration.coverity.ws.v9.DefectService;
 import com.synopsys.integration.coverity.ws.v9.DefectServiceService;
 import com.synopsys.integration.coverity.ws.view.ViewService;
+import com.synopsys.integration.exception.EncryptionException;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.phonehome.PhoneHomeCallable;
+import com.synopsys.integration.phonehome.PhoneHomeClient;
+import com.synopsys.integration.phonehome.PhoneHomeRequestBody;
+import com.synopsys.integration.phonehome.PhoneHomeService;
+import com.synopsys.integration.phonehome.google.analytics.GoogleAnalyticsConstants;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.util.IntEnvironmentVariables;
 
 public class WebServiceFactory {
     public static final String COVERITY_V9_NAMESPACE = "http://ws.coverity.com/v9";
@@ -139,11 +139,6 @@ public class WebServiceFactory {
             }
             throw new CoverityIntegrationException("An unexpected error occurred.", e);
         }
-    }
-
-    public PhoneHomeService createPhoneHomeService() {
-        final PhoneHomeService phoneHomeService = new PhoneHomeService(logger);
-        return phoneHomeService;
     }
 
     public PhoneHomeService createPhoneHomeService(final ExecutorService executorService) {
