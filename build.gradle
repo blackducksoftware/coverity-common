@@ -17,8 +17,8 @@ apply plugin: 'com.blackducksoftware.integration.library'
 nexusStaging { packageGroup = 'com.synopsys' }
 
 dependencies {
-    compile 'com.blackducksoftware.integration:phone-home-client:0.15.3'
-    compile 'com.blackducksoftware.integration:integration-rest:0.1.3'
+    compile 'com.blackducksoftware.integration:phone-home-client:0.15.4'
+    compile 'com.blackducksoftware.integration:integration-rest:0.1.4'
     compile 'com.sun.xml.xws:xws-security:3.0'
     compile 'com.sun.xml.messaging.saaj:saaj-impl:1.4.0'
 
