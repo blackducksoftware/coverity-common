@@ -81,7 +81,7 @@ public class CoverityServerConfigValidator extends AbstractValidator {
     }
 
     public void assertCredentialsValid(final ValidationResults results, final String username, final String password) {
-        final CredentialsValidator credentialsValidator = new CredentialsValidator();
+        final CoverityCredentialsValidator credentialsValidator = new CoverityCredentialsValidator();
         credentialsValidator.setUsername(username);
         credentialsValidator.setPassword(password);
         final ValidationResults credentialResults = credentialsValidator.assertValid();
