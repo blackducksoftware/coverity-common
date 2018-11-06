@@ -45,14 +45,12 @@ import com.synopsys.integration.coverity.ws.v9.CovRemoteServiceException_Excepti
 import com.synopsys.integration.coverity.ws.v9.DefectService;
 import com.synopsys.integration.coverity.ws.v9.DefectServiceService;
 import com.synopsys.integration.coverity.ws.view.ViewService;
-import com.synopsys.integration.exception.EncryptionException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.phonehome.PhoneHomeCallable;
 import com.synopsys.integration.phonehome.PhoneHomeClient;
 import com.synopsys.integration.phonehome.PhoneHomeRequestBody;
 import com.synopsys.integration.phonehome.PhoneHomeService;
 import com.synopsys.integration.phonehome.google.analytics.GoogleAnalyticsConstants;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.util.IntEnvironmentVariables;
 
 public class WebServiceFactory {
@@ -92,10 +90,10 @@ public class WebServiceFactory {
         return logger;
     }
 
-    public DefectService createDefectService() throws MalformedURLException, EncryptionException {
+    public DefectService createDefectService() throws MalformedURLException {
         final DefectServiceService defectServiceService = new DefectServiceService(
-                new URL(coverityServerConfig.getUrl(), DEFECT_SERVICE_V9_WSDL),
-                new QName(COVERITY_V9_NAMESPACE, "DefectServiceService"));
+            new URL(coverityServerConfig.getUrl(), DEFECT_SERVICE_V9_WSDL),
+            new QName(COVERITY_V9_NAMESPACE, "DefectServiceService"));
 
         final DefectService defectService = defectServiceService.getDefectServicePort();
         attachAuthenticationHandler((BindingProvider) defectService, coverityServerConfig.getUsername(), coverityServerConfig.getPassword());
@@ -103,15 +101,15 @@ public class WebServiceFactory {
         return defectService;
     }
 
-    public DefectServiceWrapper createDefectServiceWrapper() throws MalformedURLException, EncryptionException {
+    public DefectServiceWrapper createDefectServiceWrapper() throws MalformedURLException {
         final DefectServiceWrapper defectServiceWrapper = new DefectServiceWrapper(logger, createDefectService());
         return defectServiceWrapper;
     }
 
-    public ConfigurationService createConfigurationService() throws MalformedURLException, EncryptionException {
+    public ConfigurationService createConfigurationService() throws MalformedURLException {
         final ConfigurationServiceService configurationServiceService = new ConfigurationServiceService(
-                new URL(coverityServerConfig.getUrl(), CONFIGURATION_SERVICE_V9_WSDL),
-                new QName(COVERITY_V9_NAMESPACE, "ConfigurationServiceService"));
+            new URL(coverityServerConfig.getUrl(), CONFIGURATION_SERVICE_V9_WSDL),
+            new QName(COVERITY_V9_NAMESPACE, "ConfigurationServiceService"));
 
         final ConfigurationService configurationService = configurationServiceService.getConfigurationServicePort();
         attachAuthenticationHandler((BindingProvider) configurationService, coverityServerConfig.getUsername(), coverityServerConfig.getPassword());
@@ -119,21 +117,21 @@ public class WebServiceFactory {
         return configurationService;
     }
 
-    public ViewService createViewService() throws EncryptionException {
+    public ViewService createViewService() {
         final CredentialsRestConnection credentialsRestConnection = createCredentialsRestConnection();
         final ViewService viewService = new ViewService(logger, credentialsRestConnection, gson);
         return viewService;
     }
 
-    public CredentialsRestConnection createCredentialsRestConnection() throws EncryptionException {
-        return new CredentialsRestConnection(logger, coverityServerConfig.getUrl(), coverityServerConfig.getUsername(), coverityServerConfig.getPassword(), 300, ProxyInfo.NO_PROXY_INFO);
+    public CredentialsRestConnection createCredentialsRestConnection() {
+        return new CredentialsRestConnection(logger, coverityServerConfig.getUrl(), coverityServerConfig.getUsername(), coverityServerConfig.getPassword(), 300, coverityServerConfig.getProxyInfo());
     }
 
-    public void connect() throws MalformedURLException, CoverityIntegrationException, EncryptionException {
+    public void connect() throws MalformedURLException, CoverityIntegrationException {
         final ConfigurationService configurationService = createConfigurationService();
         try {
             configurationService.getUser(coverityServerConfig.getUsername());
-        } catch (SOAPFaultException | CovRemoteServiceException_Exception e) {
+        } catch (final SOAPFaultException | CovRemoteServiceException_Exception e) {
             if (StringUtils.isNotBlank(e.getMessage())) {
                 throw new CoverityIntegrationException(e.getMessage(), e);
             }
@@ -146,15 +144,14 @@ public class WebServiceFactory {
         return phoneHomeService;
     }
 
-    public PhoneHomeCallable createCoverityPhoneHomeCallable(final URL productURL, final String artifactId, final String artifactVersion) throws MalformedURLException, EncryptionException {
+    public PhoneHomeCallable createCoverityPhoneHomeCallable(final URL productURL, final String artifactId, final String artifactVersion) throws MalformedURLException {
         final PhoneHomeCallable phoneHomeCallable = new CoverityPhoneHomeCallable(logger, createPhoneHomeClient(), createConfigurationService(), productURL, artifactId, artifactVersion, intEnvironmentVariables);
         return phoneHomeCallable;
     }
 
-    public PhoneHomeCallable createCoverityPhoneHomeCallable(final URL productURL, final String artifactId, final String artifactVersion, final PhoneHomeRequestBody.Builder phoneHomeRequestBodyBuilder)
-            throws MalformedURLException, EncryptionException {
+    public PhoneHomeCallable createCoverityPhoneHomeCallable(final URL productURL, final String artifactId, final String artifactVersion, final PhoneHomeRequestBody.Builder phoneHomeRequestBodyBuilder) throws MalformedURLException {
         final PhoneHomeCallable phoneHomeCallable = new CoverityPhoneHomeCallable(logger, createPhoneHomeClient(), createConfigurationService(), productURL, artifactId, artifactVersion,
-                intEnvironmentVariables, phoneHomeRequestBodyBuilder);
+            intEnvironmentVariables, phoneHomeRequestBodyBuilder);
         return phoneHomeCallable;
     }
 
@@ -165,8 +162,7 @@ public class WebServiceFactory {
     }
 
     private void attachAuthenticationHandler(final BindingProvider service, final String username, final String password) {
-        service.getBinding().setHandlerChain(Arrays.<Handler>asList(new ClientAuthenticationHandlerWSS(
-                username, password)));
+        service.getBinding().setHandlerChain(Arrays.<Handler>asList(new ClientAuthenticationHandlerWSS(username, password)));
     }
 
 }

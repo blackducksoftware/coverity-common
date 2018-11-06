@@ -24,44 +24,66 @@
 package com.synopsys.integration.coverity.config;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
-import com.synopsys.integration.builder.AbstractBuilder;
+import com.synopsys.integration.coverity.CoverityServerVerifier;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.credentials.Credentials;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.util.BuilderStatus;
+import com.synopsys.integration.util.IntegrationBuilder;
 
-public class CoverityServerConfigBuilder extends AbstractBuilder<CoverityServerConfig> {
-    private final CoverityServerConfigValidator coverityServerConfigValidator;
+public class CoverityServerConfigBuilder extends IntegrationBuilder<CoverityServerConfig> {
+    private final CoverityServerVerifier coverityServerVerifier;
     private String url;
-    private String username;
-    private String password;
+    private Credentials credentials;
+    private ProxyInfo proxyInfo;
 
-    public CoverityServerConfigBuilder(final CoverityServerConfigValidator coverityServerConfigValidator) {
-        this.coverityServerConfigValidator = coverityServerConfigValidator;
+    public CoverityServerConfigBuilder(final CoverityServerVerifier coverityServerVerifier) {
+        this.coverityServerVerifier = coverityServerVerifier;
     }
 
     public CoverityServerConfigBuilder() {
-        this.coverityServerConfigValidator = new CoverityServerConfigValidator();
+        this.coverityServerVerifier = new CoverityServerVerifier();
     }
 
     @Override
-    public CoverityServerConfigValidator createValidator() {
-        coverityServerConfigValidator.setUrl(url);
-        coverityServerConfigValidator.setUsername(username);
-        coverityServerConfigValidator.setPassword(password);
-        return coverityServerConfigValidator;
-    }
-
-    @Override
-    public CoverityServerConfig buildObject() {
-        URL uRL = null;
+    protected CoverityServerConfig buildWithoutValidation() {
+        URL url = null;
         try {
-            uRL = new URL(url);
-        } catch (final MalformedURLException e) {
+            url = new URL(this.url);
+        } catch (final MalformedURLException ignore) {
+            // Skipping validation
         }
-        final CredentialsBuilder credentialsBuilder = new CredentialsBuilder();
-        credentialsBuilder.setUsername(username);
-        credentialsBuilder.setPassword(password);
-        return new CoverityServerConfig(uRL, credentialsBuilder.buildObject());
+
+        return new CoverityServerConfig(url, credentials, proxyInfo);
+    }
+
+    @Override
+    protected void validate(final BuilderStatus builderStatus) {
+        if (url == null) {
+            builderStatus.addErrorMessage("No Coverity URL set.");
+            return;
+        }
+
+        final URL validUrl;
+        try {
+            validUrl = new URL(url);
+            validUrl.toURI();
+        } catch (final MalformedURLException | URISyntaxException e) {
+            builderStatus.addErrorMessage("The Coverity URL is not a valid URL. " + e.getMessage());
+            return;
+        }
+
+        try {
+            coverityServerVerifier.verifyIsCoverityServer(validUrl);
+        } catch (final IntegrationException e) {
+            builderStatus.addErrorMessage(e.getMessage());
+        }
+
+        new CredentialsBuilder();
     }
 
     public CoverityServerConfigBuilder url(final String url) {
@@ -69,14 +91,13 @@ public class CoverityServerConfigBuilder extends AbstractBuilder<CoverityServerC
         return this;
     }
 
-    public CoverityServerConfigBuilder username(final String username) {
-        this.username = username;
+    public CoverityServerConfigBuilder credentails(final Credentials credentials) {
+        this.credentials = credentials;
         return this;
     }
 
-    public CoverityServerConfigBuilder password(final String password) {
-        this.password = password;
+    public CoverityServerConfigBuilder proxyInfo(final ProxyInfo proxyInfo) {
+        this.proxyInfo = proxyInfo;
         return this;
     }
-
 }

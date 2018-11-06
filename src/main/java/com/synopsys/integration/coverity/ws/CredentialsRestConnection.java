@@ -31,7 +31,6 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.connection.RestConnection;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -47,16 +46,15 @@ public class CredentialsRestConnection extends RestConnection {
     }
 
     @Override
-    public void populateHttpClientBuilder(final HttpClientBuilder httpClientBuilder, final RequestConfig.Builder defaultRequestConfigBuilder) throws IntegrationException {
+    public void populateHttpClientBuilder(final HttpClientBuilder httpClientBuilder, final RequestConfig.Builder defaultRequestConfigBuilder) {
         if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-            final UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
-            getCredentialsProvider().setCredentials(new AuthScope(getBaseUrl().getHost(), getBaseUrl().getPort()), creds);
+            final UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
+            getCredentialsProvider().setCredentials(new AuthScope(getBaseUrl().getHost(), getBaseUrl().getPort()), credentials);
         }
     }
 
     @Override
-    public void completeConnection() throws IntegrationException {
+    public void completeConnection() {
         // nothing additional needed to connect
     }
-
 }

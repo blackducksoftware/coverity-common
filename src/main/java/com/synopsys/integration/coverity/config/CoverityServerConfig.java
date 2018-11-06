@@ -26,8 +26,8 @@ package com.synopsys.integration.coverity.config;
 import java.io.Serializable;
 import java.net.URL;
 
-import com.synopsys.integration.exception.EncryptionException;
 import com.synopsys.integration.rest.credentials.Credentials;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.util.Stringable;
 
 public class CoverityServerConfig extends Stringable implements Serializable {
@@ -35,10 +35,12 @@ public class CoverityServerConfig extends Stringable implements Serializable {
 
     private final URL url;
     private final Credentials coverityCredentials;
+    private final ProxyInfo proxyInfo;
 
-    public CoverityServerConfig(final URL url, final Credentials coverityCredentials) {
+    public CoverityServerConfig(final URL url, final Credentials coverityCredentials, final ProxyInfo proxyInfo) {
         this.url = url;
         this.coverityCredentials = coverityCredentials;
+        this.proxyInfo = proxyInfo;
     }
 
     public URL getUrl() {
@@ -56,11 +58,14 @@ public class CoverityServerConfig extends Stringable implements Serializable {
         return null;
     }
 
-    public String getPassword() throws EncryptionException {
+    public String getPassword() {
         if (null != coverityCredentials) {
-            return coverityCredentials.getDecryptedPassword();
+            return coverityCredentials.getPassword();
         }
         return null;
     }
 
+    public ProxyInfo getProxyInfo() {
+        return proxyInfo != null ? proxyInfo : ProxyInfo.NO_PROXY_INFO;
+    }
 }
