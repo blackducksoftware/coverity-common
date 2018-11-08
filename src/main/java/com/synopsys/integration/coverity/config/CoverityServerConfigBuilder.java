@@ -30,7 +30,6 @@ import java.net.URL;
 import com.synopsys.integration.coverity.CoverityServerVerifier;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.credentials.Credentials;
-import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.util.BuilderStatus;
 import com.synopsys.integration.util.IntegrationBuilder;
@@ -63,6 +62,16 @@ public class CoverityServerConfigBuilder extends IntegrationBuilder<CoverityServ
 
     @Override
     protected void validate(final BuilderStatus builderStatus) {
+        if (credentials == null) {
+            builderStatus.addErrorMessage("No Coverity credentials set.");
+            return;
+        }
+
+        if (proxyInfo == null) {
+            builderStatus.addErrorMessage("No Coverity ProxyInfo set.");
+            return;
+        }
+
         if (url == null) {
             builderStatus.addErrorMessage("No Coverity URL set.");
             return;
@@ -82,8 +91,6 @@ public class CoverityServerConfigBuilder extends IntegrationBuilder<CoverityServ
         } catch (final IntegrationException e) {
             builderStatus.addErrorMessage(e.getMessage());
         }
-
-        new CredentialsBuilder();
     }
 
     public CoverityServerConfigBuilder url(final String url) {
