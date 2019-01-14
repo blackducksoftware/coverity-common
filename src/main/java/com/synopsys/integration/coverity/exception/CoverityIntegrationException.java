@@ -1,7 +1,7 @@
 /**
  * coverity-common
  *
- * Copyright (C) 2018 Black Duck Software, Inc.
+ * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,7 +26,6 @@ package com.synopsys.integration.coverity.exception;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class CoverityIntegrationException extends IntegrationException {
-
     public CoverityIntegrationException() {
         super();
     }

@@ -1,7 +1,7 @@
 /**
  * coverity-common
  *
- * Copyright (C) 2018 Black Duck Software, Inc.
+ * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -32,7 +32,6 @@ import java.io.OutputStream;
  */
 public class ExecutableRedirectThread extends Thread {
     private final InputStream in;
-
     private final OutputStream out;
 
     public ExecutableRedirectThread(final InputStream in, final OutputStream out) {

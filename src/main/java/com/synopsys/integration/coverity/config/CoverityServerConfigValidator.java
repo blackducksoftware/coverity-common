@@ -1,7 +1,7 @@
 /**
  * coverity-common
  *
- * Copyright (C) 2018 Black Duck Software, Inc.
+ * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -36,7 +36,6 @@ import com.synopsys.integration.validator.ValidationResultEnum;
 import com.synopsys.integration.validator.ValidationResults;
 
 public class CoverityServerConfigValidator extends AbstractValidator {
-
     private final CoverityServerVerifier coverityServerVerifier;
     private String url;
     private String username;
