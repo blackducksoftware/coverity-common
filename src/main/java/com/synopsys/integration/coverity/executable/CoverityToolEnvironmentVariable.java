@@ -23,27 +23,14 @@
  */
 package com.synopsys.integration.coverity.executable;
 
-// ...
-// 1
-// ...
-public enum CoverityEnvironmentVariable implements SynopsysEnvironmentVariable {
+public enum CoverityToolEnvironmentVariable implements SynopsysEnvironmentVariable {
     USER("COV_USER"),
     PASSPHRASE("COVERITY_PASSPHRASE"),
     PASSPHRASE_FILE("COVERITY_PASSPHRASE_FILE");
 
-    // ...
-    // 2
-    // ...
-
-    // Paraphrased from the Coverity devs:
-    // "All Coverity tools written as C++ programs share the same backend args parser, so the flags should be accepted by all of them but may-or-may-not be used."
-    //
-    // Therefore, this enum should only be populated with things we absolutely want the tools to pick up from environment variables, like passwords.
-    // -rotte (1/18/2019)
-
     private final String name;
 
-    CoverityEnvironmentVariable(final String name) {
+    CoverityToolEnvironmentVariable(final String name) {
         this.name = name;
     }
 

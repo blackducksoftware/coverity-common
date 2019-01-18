@@ -1,7 +1,6 @@
 package com.synopsys.integration.coverity.executable
 
 import com.synopsys.integration.coverity.exception.ExecutableException
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -40,7 +39,7 @@ class ExecutableManagerTest {
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
         try {
             executableManager.addCoverityBinToArguments(new ArrayList<String>());
-            Assert.fail("Should have thrown an exception");
+            fail("Should have thrown an exception");
         } catch (ExecutableException e) {
             assertNotNull(e);
         }
@@ -54,7 +53,7 @@ class ExecutableManagerTest {
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
         try {
             executableManager.addCoverityBinToArguments(new ArrayList<String>());
-            Assert.fail("Should have thrown an exception");
+            fail("Should have thrown an exception");
         } catch (ExecutableException e) {
             assertNotNull(e);
         }
@@ -143,7 +142,7 @@ class ExecutableManagerTest {
 
         Map<String, String> environment = new HashMap<>();
         environment.putAll(System.getenv());
-        environment.put(CoverityEnvironmentVariable.PASSWORD.toString(), "secretPassword");
+        environment.put(CoverityToolEnvironmentVariable.PASSPHRASE.toString(), "secretPassword");
         assertEquals(environment, processBuilder.environment());
     }
 
@@ -164,7 +163,7 @@ class ExecutableManagerTest {
 
         Map<String, String> environment = new HashMap<>();
         environment.putAll(System.getenv());
-        environment.put(CoverityEnvironmentVariable.PASSWORD.toString(), "secretPassword");
+        environment.put(CoverityToolEnvironmentVariable.PASSPHRASE.toString(), "secretPassword");
         assertEquals(environment, processBuilder.environment());
     }
 
@@ -176,7 +175,7 @@ class ExecutableManagerTest {
 
         List<String> arguments = Arrays.asList("tool", "things");
         Map<String, String> preEnvironment = new HashMap<>();
-        preEnvironment.put(CoverityEnvironmentVariable.PASSWORD.toString(), "password");
+        preEnvironment.put(CoverityToolEnvironmentVariable.PASSPHRASE.toString(), "password");
 
         Executable executable = new Executable(arguments, workingDirectory, preEnvironment);
         ProcessBuilder processBuilder = executableManager.createProcessBuilder(executable);
@@ -188,7 +187,7 @@ class ExecutableManagerTest {
 
         Map<String, String> environment = new HashMap<>();
         environment.putAll(System.getenv());
-        environment.put(CoverityEnvironmentVariable.PASSWORD.toString(), "password");
+        environment.put(CoverityToolEnvironmentVariable.PASSPHRASE.toString(), "password");
         assertEquals(environment, processBuilder.environment());
     }
 
@@ -200,7 +199,7 @@ class ExecutableManagerTest {
 
         List<String> arguments = Arrays.asList("tool", "--pa", "secretPassword", "things");
         Map<String, String> preEnvironment = new HashMap<>();
-        preEnvironment.put(CoverityEnvironmentVariable.PASSWORD.toString(), "password");
+        preEnvironment.put(CoverityToolEnvironmentVariable.PASSPHRASE.toString(), "password");
 
         Executable executable = new Executable(arguments, workingDirectory, preEnvironment);
         ProcessBuilder processBuilder = executableManager.createProcessBuilder(executable);
@@ -212,7 +211,7 @@ class ExecutableManagerTest {
 
         Map<String, String> environment = new HashMap<>();
         environment.putAll(System.getenv());
-        environment.put(CoverityEnvironmentVariable.PASSWORD.toString(), "secretPassword");
+        environment.put(CoverityToolEnvironmentVariable.PASSPHRASE.toString(), "secretPassword");
         assertEquals(environment, processBuilder.environment());
     }
 
@@ -226,7 +225,7 @@ class ExecutableManagerTest {
         Executable executable = new Executable(arguments, workingDirectory);
         try {
             executableManager.createProcessBuilder(executable);
-            Assert.fail("Should have thrown an exception");
+            fail("Should have thrown an exception");
         } catch (ExecutableException e) {
             assertNotNull(e);
         }

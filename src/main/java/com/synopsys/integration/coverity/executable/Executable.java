@@ -93,7 +93,7 @@ public class Executable extends EnvironmentContributor {
             String removedValue = processedExecutableArguments.remove(indexToRemove);
             //also remove the argument before the password
             processedExecutableArguments.remove(indexToRemove - 1);
-            populateEnvironmentMap(getEnvironmentVariables(), CoverityEnvironmentVariable.PASSWORD, removedValue);
+            populateEnvironmentMap(getEnvironmentVariables(), CoverityToolEnvironmentVariable.PASSPHRASE, removedValue);
         }
         return processedExecutableArguments;
     }

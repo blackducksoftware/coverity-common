@@ -28,7 +28,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 public abstract class EnvironmentContributor {
-    protected void populateEnvironmentMap(final Map<String, String> environment, final CoverityEnvironmentVariable key, final String value) {
+    protected void populateEnvironmentMap(final Map<String, String> environment, final CoverityToolEnvironmentVariable key, final String value) {
         populateEnvironmentMap(environment, key.toString(), value);
     }
 
