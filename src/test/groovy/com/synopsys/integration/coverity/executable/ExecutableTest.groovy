@@ -2,20 +2,19 @@ package com.synopsys.integration.coverity.executable
 
 import com.synopsys.integration.coverity.exception.ExecutableException
 import org.apache.commons.lang3.StringUtils
-import org.junit.Assert
-import org.junit.Rule
-import org.junit.Test
-import org.junit.rules.TemporaryFolder
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.junitpioneer.jupiter.TempDirectory
 
-import static org.junit.Assert.*
+import java.nio.file.Path
+
+import static org.junit.jupiter.api.Assertions.*
 
 public class ExecutableTest {
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
     @Test
-    public void testConstructors() {
-        File workingDirectory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testConstructors(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File workingDirectory = workingDirectoryPath.toFile()
 
         Executable executable = new Executable(Collections.emptyList());
         assertEquals(System.getProperty("user.dir"), executable.workingDirectory.getAbsolutePath());
@@ -43,15 +42,17 @@ public class ExecutableTest {
     }
 
     @Test
-    public void testGetExecutableArgumentsEmpty() {
-        File workingDirectory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testGetExecutableArgumentsEmpty(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File workingDirectory = workingDirectoryPath.toFile();
         Executable executable = new Executable(Collections.emptyList(), workingDirectory);
         assertTrue(executable.executableArguments.isEmpty());
     }
 
     @Test
-    public void testGetExecutableArguments() {
-        File workingDirectory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testGetExecutableArguments(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File workingDirectory = workingDirectoryPath.toFile();
 
         List<String> arguments = Arrays.asList("test", "--pa", "secretPassword", "things");
         Executable executable = new Executable(arguments, workingDirectory);
@@ -63,15 +64,17 @@ public class ExecutableTest {
     }
 
     @Test
-    public void testGetMaskedExecutableArgumentsEmpty() {
-        File workingDirectory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testGetMaskedExecutableArgumentsEmpty(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File workingDirectory = workingDirectoryPath.toFile();
         Executable executable = new Executable(Collections.emptyList(), workingDirectory);
         assertTrue(StringUtils.isEmpty(executable.getMaskedExecutableArguments()));
     }
 
     @Test
-    public void testGetMaskedExecutableArguments() {
-        File workingDirectory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testGetMaskedExecutableArguments(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File workingDirectory = workingDirectoryPath.toFile();
 
         List<String> arguments = Arrays.asList("test", "--pa", "secretPassword", "things");
         Executable executable = new Executable(arguments, workingDirectory);
@@ -83,8 +86,9 @@ public class ExecutableTest {
     }
 
     @Test
-    public void testGetMaskedExecutableArgumentsMultiplePasswords() {
-        File workingDirectory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testGetMaskedExecutableArgumentsMultiplePasswords(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File workingDirectory = workingDirectoryPath.toFile();
 
         List<String> arguments = Arrays.asList("test", "--pa", "secretPassword", "things", "--password", "secret");
         Executable executable = new Executable(arguments, workingDirectory);

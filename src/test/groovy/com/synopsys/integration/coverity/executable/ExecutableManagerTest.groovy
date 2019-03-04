@@ -1,24 +1,22 @@
 package com.synopsys.integration.coverity.executable
 
 import com.synopsys.integration.coverity.exception.ExecutableException
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.junit.rules.TemporaryFolder
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.junitpioneer.jupiter.TempDirectory
 
-import static org.junit.Assert.*
+import java.nio.file.Path
+
+import static org.junit.jupiter.api.Assertions.*
 
 class ExecutableManagerTest {
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
     private File coverityStaticAnalysisDirectory;
     private File coverityStaticAnalysisBinDirectory;
 
-    @Before
-    public void setup() {
-        File directory = temporaryFolder.newFolder();
+    @BeforeEach
+    public void setup(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File directory = workingDirectoryPath.toFile()
         coverityStaticAnalysisDirectory = new File(directory, "common-coverity-analysis");
         coverityStaticAnalysisBinDirectory = new File(coverityStaticAnalysisDirectory, "bin");
         coverityStaticAnalysisBinDirectory.mkdirs();
@@ -28,41 +26,45 @@ class ExecutableManagerTest {
     }
 
     @Test
+    @ExtendWith(TempDirectory.class)
     public void testConstructor() {
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
         assertEquals(coverityStaticAnalysisDirectory, executableManager.getCoverityStaticAnalysisDirectory());
     }
 
     @Test
-    public void testAddCoverityBinToPathDirectoryDoesntExist() {
-        File directory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testAddCoverityBinToPathDirectoryDoesntExist(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File directory = workingDirectoryPath.toFile();
         File coverityStaticAnalysisDirectory = new File(directory, "coverity-analysis");
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
         try {
             executableManager.addCoverityBinToArguments(new ArrayList<String>());
-            Assert.fail("Should have thrown an exception");
+            fail("Should have thrown an exception");
         } catch (ExecutableException e) {
             assertNotNull(e);
         }
     }
 
     @Test
-    public void testAddCoverityBinToPathBinDoesntExist() {
-        File directory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testAddCoverityBinToPathBinDoesntExist(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File directory = workingDirectoryPath.toFile();
         File coverityStaticAnalysisDirectory = new File(directory, "coverity-analysis");
         coverityStaticAnalysisDirectory.mkdirs();
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
         try {
             executableManager.addCoverityBinToArguments(new ArrayList<String>());
-            Assert.fail("Should have thrown an exception");
+            fail("Should have thrown an exception");
         } catch (ExecutableException e) {
             assertNotNull(e);
         }
     }
 
     @Test
-    public void testAddCoverityBinToPathNoArguments() {
-        File directory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testAddCoverityBinToPathNoArguments(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File directory = workingDirectoryPath.toFile();
         File coverityStaticAnalysisDirectory = new File(directory, "coverity-analysis");
         File coverityStaticAnalysisBinDirectory = new File(coverityStaticAnalysisDirectory, "bin");
         coverityStaticAnalysisBinDirectory.mkdirs();
@@ -74,8 +76,9 @@ class ExecutableManagerTest {
     }
 
     @Test
-    public void testAddCoverityBinToPathWithArgumentToolDoenstExist() {
-        File directory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testAddCoverityBinToPathWithArgumentToolDoenstExist(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File directory = workingDirectoryPath.toFile();
         File coverityStaticAnalysisDirectory = new File(directory, "coverity-analysis");
         File coverityStaticAnalysisBinDirectory = new File(coverityStaticAnalysisDirectory, "bin");
         coverityStaticAnalysisBinDirectory.mkdirs();
@@ -91,8 +94,9 @@ class ExecutableManagerTest {
     }
 
     @Test
-    public void testAddCoverityBinToPathWithArgument() {
-        File directory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testAddCoverityBinToPathWithArgument(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File directory = workingDirectoryPath.toFile();
         File coverityStaticAnalysisDirectory = new File(directory, "coverity-analysis");
         File coverityStaticAnalysisBinDirectory = new File(coverityStaticAnalysisDirectory, "bin");
         coverityStaticAnalysisBinDirectory.mkdirs();
@@ -109,8 +113,9 @@ class ExecutableManagerTest {
     }
 
     @Test
-    public void testCreateProcessBuilderEmpty() {
-        File workingDirectory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testCreateProcessBuilderEmpty(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File workingDirectory = workingDirectoryPath.toFile();
 
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
 
@@ -127,8 +132,9 @@ class ExecutableManagerTest {
     }
 
     @Test
-    public void testCreateProcessBuilder() {
-        File workingDirectory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testCreateProcessBuilder(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File workingDirectory = workingDirectoryPath.toFile();
 
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
 
@@ -148,8 +154,9 @@ class ExecutableManagerTest {
     }
 
     @Test
-    public void testCreateProcessBuilder2() {
-        File workingDirectory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testCreateProcessBuilder2(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File workingDirectory = workingDirectoryPath.toFile();
 
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
 
@@ -169,8 +176,9 @@ class ExecutableManagerTest {
     }
 
     @Test
-    public void testCreateProcessBuilderEnvironmentPassword() {
-        File workingDirectory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testCreateProcessBuilderEnvironmentPassword(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File workingDirectory = workingDirectoryPath.toFile();
 
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
 
@@ -193,8 +201,9 @@ class ExecutableManagerTest {
     }
 
     @Test
-    public void testCreateProcessBuilderEnvironmentPasswordOverriden() {
-        File workingDirectory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testCreateProcessBuilderEnvironmentPasswordOverriden(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File workingDirectory = workingDirectoryPath.toFile();
 
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
 
@@ -217,8 +226,9 @@ class ExecutableManagerTest {
     }
 
     @Test
-    public void testCreateProcessBuilderMultiplePasswords() {
-        File workingDirectory = temporaryFolder.newFolder();
+    @ExtendWith(TempDirectory.class)
+    public void testCreateProcessBuilderMultiplePasswords(@TempDirectory.TempDir Path workingDirectoryPath) {
+        File workingDirectory = workingDirectoryPath.toFile();
 
         ExecutableManager executableManager = new ExecutableManager(coverityStaticAnalysisDirectory);
 
@@ -226,7 +236,7 @@ class ExecutableManagerTest {
         Executable executable = new Executable(arguments, workingDirectory);
         try {
             executableManager.createProcessBuilder(executable);
-            Assert.fail("Should have thrown an exception");
+            fail("Should have thrown an exception");
         } catch (ExecutableException e) {
             assertNotNull(e);
         }

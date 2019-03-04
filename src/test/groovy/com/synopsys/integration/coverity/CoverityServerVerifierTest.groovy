@@ -6,23 +6,21 @@ import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
-import static org.junit.Assert.assertTrue
-import static org.junit.Assert.fail
+import static org.junit.jupiter.api.Assertions.*
 
 class CoverityServerVerifierTest {
-
     private final MockWebServer server = new MockWebServer();
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         server.start();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         server.shutdown();
     }
@@ -46,7 +44,6 @@ class CoverityServerVerifierTest {
         coverityServerVerifier.verifyIsCoverityServer(server.url(WebServiceFactory.CONFIGURATION_SERVICE_V9_WSDL).url())
     }
 
-
     private void setResponse(MockResponse response) {
         final Dispatcher dispatcher = new Dispatcher() {
             @Override
@@ -56,4 +53,5 @@ class CoverityServerVerifierTest {
         };
         server.setDispatcher(dispatcher);
     }
+
 }

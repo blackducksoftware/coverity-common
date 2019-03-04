@@ -1,11 +1,10 @@
 package com.synopsys.integration.coverity
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
-import static org.junit.Assert.*
+import static org.junit.jupiter.api.Assertions.*
 
 class CoverityVersionTest {
-
     @Test
     public void testConstructors() {
         CoverityVersion coverityVersion = new CoverityVersion(9, 3)
@@ -61,7 +60,6 @@ class CoverityVersionTest {
         assertTrue(2 == coverityVersion.hotfix)
         assertTrue(coverityVersion.isSrmVersion)
 
-
         optionalCoverityVersion = CoverityVersion.parse("9.3.1")
         assertTrue(optionalCoverityVersion.isPresent())
         coverityVersion = optionalCoverityVersion.get()
@@ -70,7 +68,6 @@ class CoverityVersionTest {
         assertTrue(1 == coverityVersion.patch)
         assertTrue(0 == coverityVersion.hotfix)
         assertFalse(coverityVersion.isSrmVersion)
-
 
         optionalCoverityVersion = CoverityVersion.parse("9.3.1.2")
         assertTrue(optionalCoverityVersion.isPresent())
@@ -112,8 +109,6 @@ class CoverityVersionTest {
         assertTrue(coverityVersionOld.compareTo(coverityVersionNewer) < 0)
         assertTrue(coverityVersionNewer.compareTo(coverityVersionOld) > 0)
 
-
-
         coverityVersionOld = new CoverityVersion(9, 4, 1, 2)
         coverityVersionNewer = new CoverityVersion(9, 4, 1, 2)
         assertTrue(coverityVersionOld.compareTo(coverityVersionNewer) == 0)
@@ -144,7 +139,6 @@ class CoverityVersionTest {
         coverityVersionNewer = new CoverityVersion(9, 4, 1, 2)
         assertFalse(coverityVersionOld.compareToAnalysis(coverityVersionNewer))
         assertTrue(coverityVersionNewer.compareToAnalysis(coverityVersionOld))
-
 
         coverityVersionOld = new CoverityVersion(9, 4, 1, 2)
         coverityVersionNewer = new CoverityVersion(9, 4, 1, 2)
@@ -182,18 +176,16 @@ class CoverityVersionTest {
         coverityVersionOld = new CoverityVersion(9, 4, 1, 2)
         coverityVersionNewer = new CoverityVersion(9, 4, 1, 2)
         assertTrue(coverityVersionOld.equals(coverityVersionNewer))
-
-
     }
 
     @Test
     public void testHashCode() {
         CoverityVersion coverityVersion = new CoverityVersion(8, 4)
         int hashCode = coverityVersion.hashCode()
-        assertTrue(String.valueOf(hashCode), 28871323 == hashCode)
+        assertTrue(28871323 == hashCode)
 
         coverityVersion = new CoverityVersion(9, 4, 1, 2)
         hashCode = coverityVersion.hashCode()
-        assertTrue(String.valueOf(hashCode), 28901147 == hashCode)
+        assertTrue(28901147 == hashCode)
     }
 }
