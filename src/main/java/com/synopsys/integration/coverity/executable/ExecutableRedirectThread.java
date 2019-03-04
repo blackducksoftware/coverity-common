@@ -32,7 +32,6 @@ import java.io.OutputStream;
  */
 public class ExecutableRedirectThread extends Thread {
     private final InputStream in;
-
     private final OutputStream out;
 
     public ExecutableRedirectThread(final InputStream in, final OutputStream out) {

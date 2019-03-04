@@ -21,29 +21,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.coverity.exception;
+package com.synopsys.integration.coverity.executable;
 
-import com.synopsys.integration.exception.IntegrationException;
+public enum CoverityToolEnvironmentVariable implements SynopsysEnvironmentVariable {
+    USER("COV_USER"),
+    PASSPHRASE("COVERITY_PASSPHRASE"),
+    PASSPHRASE_FILE("COVERITY_PASSPHRASE_FILE");
 
-public class CoverityIntegrationException extends IntegrationException {
-    public CoverityIntegrationException() {
-        super();
+    private final String name;
+
+    CoverityToolEnvironmentVariable(final String name) {
+        this.name = name;
     }
 
-    public CoverityIntegrationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+    @Override
+    public String toString() {
+        return this.name;
     }
-
-    public CoverityIntegrationException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
-    public CoverityIntegrationException(final String message) {
-        super(message);
-    }
-
-    public CoverityIntegrationException(final Throwable cause) {
-        super(cause);
-    }
-
 }

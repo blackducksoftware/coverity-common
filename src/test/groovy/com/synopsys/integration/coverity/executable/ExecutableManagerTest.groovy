@@ -149,7 +149,7 @@ class ExecutableManagerTest {
 
         Map<String, String> environment = new HashMap<>();
         environment.putAll(System.getenv());
-        environment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "secretPassword");
+        environment.put(CoverityToolEnvironmentVariable.PASSPHRASE.toString(), "secretPassword");
         assertEquals(environment, processBuilder.environment());
     }
 
@@ -171,7 +171,7 @@ class ExecutableManagerTest {
 
         Map<String, String> environment = new HashMap<>();
         environment.putAll(System.getenv());
-        environment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "secretPassword");
+        environment.put(CoverityToolEnvironmentVariable.PASSPHRASE.toString(), "secretPassword");
         assertEquals(environment, processBuilder.environment());
     }
 
@@ -184,7 +184,7 @@ class ExecutableManagerTest {
 
         List<String> arguments = Arrays.asList("tool", "things");
         Map<String, String> preEnvironment = new HashMap<>();
-        preEnvironment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "password");
+        preEnvironment.put(CoverityToolEnvironmentVariable.PASSPHRASE.toString(), "password");
 
         Executable executable = new Executable(arguments, workingDirectory, preEnvironment);
         ProcessBuilder processBuilder = executableManager.createProcessBuilder(executable);
@@ -196,7 +196,7 @@ class ExecutableManagerTest {
 
         Map<String, String> environment = new HashMap<>();
         environment.putAll(System.getenv());
-        environment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "password");
+        environment.put(CoverityToolEnvironmentVariable.PASSPHRASE.toString(), "password");
         assertEquals(environment, processBuilder.environment());
     }
 
@@ -209,7 +209,7 @@ class ExecutableManagerTest {
 
         List<String> arguments = Arrays.asList("tool", "--pa", "secretPassword", "things");
         Map<String, String> preEnvironment = new HashMap<>();
-        preEnvironment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "password");
+        preEnvironment.put(CoverityToolEnvironmentVariable.PASSPHRASE.toString(), "password");
 
         Executable executable = new Executable(arguments, workingDirectory, preEnvironment);
         ProcessBuilder processBuilder = executableManager.createProcessBuilder(executable);
@@ -221,7 +221,7 @@ class ExecutableManagerTest {
 
         Map<String, String> environment = new HashMap<>();
         environment.putAll(System.getenv());
-        environment.put(Executable.COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, "secretPassword");
+        environment.put(CoverityToolEnvironmentVariable.PASSPHRASE.toString(), "secretPassword");
         assertEquals(environment, processBuilder.environment());
     }
 

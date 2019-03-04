@@ -36,7 +36,6 @@ import com.synopsys.integration.validator.ValidationResultEnum;
 import com.synopsys.integration.validator.ValidationResults;
 
 public class CoverityServerConfigValidator extends AbstractValidator {
-
     private final CoverityServerVerifier coverityServerVerifier;
     private String url;
     private String username;
@@ -81,7 +80,7 @@ public class CoverityServerConfigValidator extends AbstractValidator {
     }
 
     public void assertCredentialsValid(final ValidationResults results, final String username, final String password) {
-        final CredentialsValidator credentialsValidator = new CredentialsValidator();
+        final CoverityCredentialsValidator credentialsValidator = new CoverityCredentialsValidator();
         credentialsValidator.setUsername(username);
         credentialsValidator.setPassword(password);
         final ValidationResults credentialResults = credentialsValidator.assertValid();

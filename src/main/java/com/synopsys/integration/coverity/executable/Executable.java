@@ -37,10 +37,6 @@ import com.synopsys.integration.coverity.exception.ExecutableException;
 
 public class Executable extends EnvironmentContributor {
     public static final String MASKED_PASSWORD = "********";
-    public static final String COVERITY_HOST_ENVIRONMENT_VARIABLE = "COVERITY_HOST";
-    public static final String COVERITY_PORT_ENVIRONMENT_VARIABLE = "COVERITY_PORT";
-    public static final String COVERITY_USER_ENVIRONMENT_VARIABLE = "COV_USER";
-    public static final String COVERITY_PASSWORD_ENVIRONMENT_VARIABLE = "COVERITY_PASSPHRASE";
     private final File workingDirectory;
     private final Map<String, String> environmentVariables = new HashMap<>();
     private final List<String> executableArguments = new ArrayList<>();
@@ -74,9 +70,7 @@ public class Executable extends EnvironmentContributor {
 
     public String getMaskedExecutableArguments(final List<String> arguments) throws ExecutableException {
         Optional<Integer> passwordIndex = getPasswordIndex(arguments);
-        if (passwordIndex.isPresent()) {
-            arguments.set(passwordIndex.get(), MASKED_PASSWORD);
-        }
+        passwordIndex.ifPresent(integer -> arguments.set(integer, MASKED_PASSWORD));
         return StringUtils.join(arguments, ' ');
     }
 
@@ -95,11 +89,11 @@ public class Executable extends EnvironmentContributor {
 
         Optional<Integer> passwordIndex = getPasswordIndex(processedExecutableArguments);
         if (passwordIndex.isPresent()) {
-            int indexToRemove = passwordIndex.get().intValue();
+            int indexToRemove = passwordIndex.get();
             String removedValue = processedExecutableArguments.remove(indexToRemove);
             //also remove the argument before the password
             processedExecutableArguments.remove(indexToRemove - 1);
-            populateEnvironmentMap(getEnvironmentVariables(), COVERITY_PASSWORD_ENVIRONMENT_VARIABLE, removedValue);
+            populateEnvironmentMap(getEnvironmentVariables(), CoverityToolEnvironmentVariable.PASSPHRASE, removedValue);
         }
         return processedExecutableArguments;
     }

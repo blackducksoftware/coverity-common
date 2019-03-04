@@ -34,7 +34,6 @@ import com.synopsys.integration.coverity.ws.WebServiceFactory;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class CoverityServerVerifier {
-
     public void verifyIsCoverityServer(final URL coverityURL) throws IntegrationException {
         URL wsdlURL = null;
         try {

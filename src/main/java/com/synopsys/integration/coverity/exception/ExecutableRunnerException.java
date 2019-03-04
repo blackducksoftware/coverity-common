@@ -24,7 +24,6 @@
 package com.synopsys.integration.coverity.exception;
 
 public class ExecutableRunnerException extends CoverityIntegrationException {
-
     public ExecutableRunnerException() {
         super();
     }
