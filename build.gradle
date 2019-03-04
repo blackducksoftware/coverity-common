@@ -9,8 +9,12 @@ buildscript {
 
 plugins { id 'groovy' }
 
+project.ext.moduleName = 'com.synopsys.integration.coverity-common'
+project.ext.javaUseAutoModuleName = 'true'
+
 group = 'com.synopsys.integration'
 version = '0.1.3-SNAPSHOT'
+description = 'A library for using various capabilities of Coverity.'
 
 apply plugin: 'com.blackducksoftware.integration.library'
 
