@@ -80,9 +80,8 @@ public class WebServiceFactory {
     }
 
     public DefectService createDefectService() throws MalformedURLException {
-        URL coverityUrl = new URL(coverityHttpClient.getBaseUrl());
         final DefectServiceService defectServiceService = new DefectServiceService(
-            new URL(coverityUrl, DEFECT_SERVICE_V9_WSDL),
+            new URL(coverityHttpClient.getBaseUrl() + DEFECT_SERVICE_V9_WSDL),
             new QName(COVERITY_V9_NAMESPACE, "DefectServiceService"));
 
         final DefectService defectService = defectServiceService.getDefectServicePort();
@@ -96,9 +95,8 @@ public class WebServiceFactory {
     }
 
     public ConfigurationService createConfigurationService() throws MalformedURLException {
-        URL coverityUrl = new URL(coverityHttpClient.getBaseUrl());
         final ConfigurationServiceService configurationServiceService = new ConfigurationServiceService(
-            new URL(coverityUrl, CONFIGURATION_SERVICE_V9_WSDL),
+            new URL(coverityHttpClient.getBaseUrl() + CONFIGURATION_SERVICE_V9_WSDL),
             new QName(COVERITY_V9_NAMESPACE, "ConfigurationServiceService"));
 
         final ConfigurationService configurationService = configurationServiceService.getConfigurationServicePort();

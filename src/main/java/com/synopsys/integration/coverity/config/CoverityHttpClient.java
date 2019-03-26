@@ -26,21 +26,15 @@ package com.synopsys.integration.coverity.config;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.codec.Charsets;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.message.BasicNameValuePair;
 
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.rest.RestConstants;
+import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.client.AuthenticatingIntHttpClient;
 import com.synopsys.integration.rest.credentials.Credentials;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -51,12 +45,14 @@ public class CoverityHttpClient extends AuthenticatingIntHttpClient {
     private final String baseUrl;
     private final Credentials credentials;
     private final AuthenticationSupport authenticationSupport;
+    private Boolean validCredentials;
 
     public CoverityHttpClient(IntLogger logger, int timeout, boolean alwaysTrustServerCertificate, ProxyInfo proxyInfo, String baseUrl, AuthenticationSupport authenticationSupport, Credentials credentials) {
         super(logger, timeout, alwaysTrustServerCertificate, proxyInfo);
         this.baseUrl = baseUrl;
         this.credentials = credentials;
         this.authenticationSupport = authenticationSupport;
+        this.validCredentials = false;
 
         if (StringUtils.isBlank(baseUrl)) {
             throw new IllegalArgumentException("No base url was provided.");
@@ -74,38 +70,41 @@ public class CoverityHttpClient extends AuthenticatingIntHttpClient {
         if (credentials == null) {
             throw new IllegalArgumentException("Credentials cannot be null.");
         }
+
+        String authHeader = constructBasicAuthorizationHeader();
+        if (StringUtils.isNotBlank(authHeader)) {
+            addCommonRequestHeader(AuthenticationSupport.AUTHORIZATION_HEADER, authHeader);
+        }
     }
 
     @Override
-    public boolean isAlreadyAuthenticated(HttpUriRequest request) {
-        return request.containsHeader(RestConstants.X_CSRF_TOKEN);
+    public boolean isAlreadyAuthenticated(final HttpUriRequest request) {
+        return validCredentials;
+    }
+
+    @Override
+    public Response attemptAuthentication() throws IntegrationException {
+        return authenticationSupport.attemptAuthentication(this, getBaseUrl() + "/", "login", this.createRequestBuilder(HttpMethod.GET));
+    }
+
+    @Override
+    protected void completeAuthenticationRequest(final HttpUriRequest request, final Response response) {
+        validCredentials = response.isStatusCodeOkay();
     }
 
     public String getBaseUrl() {
         return baseUrl;
     }
 
-    @Override
-    public Response attemptAuthentication() throws IntegrationException {
-        List<NameValuePair> bodyValues = new ArrayList<>();
-        bodyValues.add(new BasicNameValuePair("username", credentials.getUsername().orElse(null)));
-        bodyValues.add(new BasicNameValuePair("password", credentials.getPassword().orElse(null)));
-        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(bodyValues, Charsets.UTF_8);
-
-        return authenticationSupport.attemptAuthentication(this, baseUrl, "login", entity);
-    }
-
-    @Override
-    protected void completeAuthenticationRequest(final HttpUriRequest request, final Response response) throws IntegrationException {
-        if (response.isStatusCodeOkay()) {
-            CloseableHttpResponse actualResponse = response.getActualResponse();
-            Header csrfHeader = actualResponse.getFirstHeader(RestConstants.X_CSRF_TOKEN);
-            String csrfHeaderValue = csrfHeader.getValue();
-            if (null != csrfHeaderValue) {
-                authenticationSupport.addAuthenticationHeader(this, request, RestConstants.X_CSRF_TOKEN, csrfHeaderValue);
-            } else {
-                logger.error("No CSRF token found when authenticating.");
-            }
+    private String constructBasicAuthorizationHeader() {
+        String username = credentials.getUsername().orElse(null);
+        String password = credentials.getPassword().orElse(null);
+        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+            String auth = username + ":" + password;
+            byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.ISO_8859_1));
+            return "Basic " + new String(encodedAuth);
         }
+
+        return StringUtils.EMPTY;
     }
 }

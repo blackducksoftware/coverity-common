@@ -25,12 +25,12 @@ package com.synopsys.integration.coverity.ws.view;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.synopsys.integration.coverity.config.CoverityHttpClient;
@@ -44,6 +44,8 @@ import com.synopsys.integration.rest.request.Response;
  * Service for interacting with the Coverity Connect Views Service JSON API
  */
 public class ViewService {
+    public static String VIEWS_LINK = "/api/views/v1";
+    public static String VIEW_CONTENT_LINK = "/api/viewContents/issues/v1/";
     private final IntLogger logger;
     private final CoverityHttpClient coverityHttpClient;
     private final Gson gson;
@@ -58,12 +60,9 @@ public class ViewService {
      * Returns a Map of available Coverity connect views, using the numeric identifier as the key and name as value
      */
     public Map<Long, String> getViews() throws IOException, IntegrationException {
-        final Map<Long, String> views = new HashMap<>();
         final JsonObject json;
 
-        final String viewsUri = coverityHttpClient.getBaseUrl() + "/api/views/v1";
-
-        final Request.Builder builder = new Request.Builder(viewsUri);
+        final Request.Builder builder = new Request.Builder(coverityHttpClient.getBaseUrl() + VIEWS_LINK);
         final Request request = builder.build();
 
         try (Response response = coverityHttpClient.execute(request)) {
@@ -72,28 +71,29 @@ public class ViewService {
             json = jsonParser.parse(jsonString).getAsJsonObject();
         }
 
-        final JsonArray jsonViews = (JsonArray) json.get("views");
-        for (final Object view : jsonViews) {
-            final JsonObject jsonView = (JsonObject) view;
-            if (jsonView.has("type")) {
-                final JsonElement typeElement = jsonView.get("type");
-                if (null != typeElement) {
-                    final String type = typeElement.getAsString();
-                    if (type.equals("issues") && jsonView.has("id") && jsonView.has("name")) {
-                        final Long viewId = Long.valueOf(jsonView.get("id").getAsString());
-                        final String viewName = jsonView.get("name").getAsString();
-                        if (viewName != null) {
-                            views.put(viewId, viewName);
-                        }
-                    }
-                }
-            }
-        }
-        return views;
+        JsonArray viewsArray = ((JsonArray) json.get("views"));
+
+        return StreamSupport.stream(viewsArray.spliterator(), false)
+                   .map(JsonObject.class::cast)
+                   .filter(jsonView -> jsonView.has("id"))
+                   .filter(this::viewHasName)
+                   .filter(this::viewHasTypeOfIssues)
+                   .collect(Collectors.toMap(jsonView -> jsonView.get("id").getAsLong(), jsonView -> jsonView.get("name").getAsString()));
+    }
+
+    private boolean viewHasTypeOfIssues(JsonObject jsonView) {
+        return jsonView.has("type")
+                   && jsonView.get("type") != null
+                   && jsonView.get("type").getAsString().equals("issues");
+    }
+
+    private boolean viewHasName(JsonObject jsonView) {
+        return jsonView.has("name")
+                   && jsonView.get("name").getAsString() != null;
     }
 
     public ViewContents getViewContents(final String projectId, final String connectView, final int pageSize, final int offset) throws IOException, IntegrationException {
-        final String viewsContentsUri = coverityHttpClient.getBaseUrl() + "/api/viewContents/issues/v1/" + URLEncoder.encode(connectView, "UTF-8");
+        final String viewsContentsUri = coverityHttpClient.getBaseUrl() + VIEW_CONTENT_LINK + URLEncoder.encode(connectView, "UTF-8");
 
         final Request.Builder builder = new Request.Builder(viewsContentsUri);
         builder.addQueryParameter("projectId", projectId);
@@ -117,5 +117,5 @@ public class ViewService {
             }
         }
     }
-    
+
 }
