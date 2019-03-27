@@ -25,18 +25,18 @@ package com.synopsys.integration.coverity.ws;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
-import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.SOAPFaultException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.synopsys.integration.coverity.config.CoverityHttpClient;
 import com.synopsys.integration.coverity.config.CoverityServerConfig;
 import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
 import com.synopsys.integration.coverity.ws.v9.ConfigurationService;
@@ -45,14 +45,9 @@ import com.synopsys.integration.coverity.ws.v9.CovRemoteServiceException_Excepti
 import com.synopsys.integration.coverity.ws.v9.DefectService;
 import com.synopsys.integration.coverity.ws.v9.DefectServiceService;
 import com.synopsys.integration.coverity.ws.view.ViewService;
-import com.synopsys.integration.exception.EncryptionException;
 import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.phonehome.PhoneHomeCallable;
-import com.synopsys.integration.phonehome.PhoneHomeClient;
-import com.synopsys.integration.phonehome.PhoneHomeRequestBody;
-import com.synopsys.integration.phonehome.PhoneHomeService;
-import com.synopsys.integration.phonehome.google.analytics.GoogleAnalyticsConstants;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.rest.RestConstants;
+import com.synopsys.integration.rest.credentials.Credentials;
 import com.synopsys.integration.util.IntEnvironmentVariables;
 
 public class WebServiceFactory {
@@ -61,78 +56,64 @@ public class WebServiceFactory {
     public static final String CONFIGURATION_SERVICE_V9_WSDL = "/ws/v9/configurationservice?wsdl";
 
     private final CoverityServerConfig coverityServerConfig;
+    private final CoverityHttpClient coverityHttpClient;
+    private final ExecutorService executorService;
     private final IntLogger logger;
     private final Gson gson;
     private final IntEnvironmentVariables intEnvironmentVariables;
 
-    public WebServiceFactory(final CoverityServerConfig coverityServerConfig, final IntLogger logger) {
-        this(coverityServerConfig, logger, new Gson(), new IntEnvironmentVariables());
-    }
-
-    public WebServiceFactory(final CoverityServerConfig coverityServerConfig, final IntLogger logger, final Gson gson) {
-        this(coverityServerConfig, logger, gson, new IntEnvironmentVariables());
-    }
-
-    public WebServiceFactory(final CoverityServerConfig coverityServerConfig, final IntLogger logger, final IntEnvironmentVariables intEnvironmentVariables) {
-        this(coverityServerConfig, logger, new Gson(), intEnvironmentVariables);
-    }
-
-    public WebServiceFactory(final CoverityServerConfig coverityServerConfig, final IntLogger logger, final Gson gson, final IntEnvironmentVariables intEnvironmentVariables) {
+    public WebServiceFactory(IntEnvironmentVariables intEnvironmentVariables, Gson gson, ExecutorService executorService, CoverityServerConfig coverityServerConfig, CoverityHttpClient coverityHttpClient, IntLogger logger) {
+        this.intEnvironmentVariables = intEnvironmentVariables;
+        this.gson = gson;
+        this.executorService = executorService;
+        this.coverityHttpClient = coverityHttpClient;
         this.coverityServerConfig = coverityServerConfig;
         this.logger = logger;
-        this.gson = gson;
-        this.intEnvironmentVariables = intEnvironmentVariables;
     }
 
-    public CoverityServerConfig getCoverityServerConfig() {
-        return coverityServerConfig;
+    public static Gson createDefaultGson() {
+        return WebServiceFactory.createDefaultGsonBuilder().create();
     }
 
-    public IntLogger getLogger() {
-        return logger;
+    public static GsonBuilder createDefaultGsonBuilder() {
+        return new GsonBuilder().setDateFormat(RestConstants.JSON_DATE_FORMAT);
     }
 
-    public DefectService createDefectService() throws MalformedURLException, EncryptionException {
+    public DefectService createDefectService() throws MalformedURLException {
         final DefectServiceService defectServiceService = new DefectServiceService(
-                new URL(coverityServerConfig.getUrl(), DEFECT_SERVICE_V9_WSDL),
-                new QName(COVERITY_V9_NAMESPACE, "DefectServiceService"));
+            new URL(coverityHttpClient.getBaseUrl() + DEFECT_SERVICE_V9_WSDL),
+            new QName(COVERITY_V9_NAMESPACE, "DefectServiceService"));
 
         final DefectService defectService = defectServiceService.getDefectServicePort();
-        attachAuthenticationHandler((BindingProvider) defectService, coverityServerConfig.getUsername(), coverityServerConfig.getPassword());
+        attachAuthenticationHandler((BindingProvider) defectService);
 
         return defectService;
     }
 
-    public DefectServiceWrapper createDefectServiceWrapper() throws MalformedURLException, EncryptionException {
-        final DefectServiceWrapper defectServiceWrapper = new DefectServiceWrapper(logger, createDefectService());
-        return defectServiceWrapper;
+    public DefectServiceWrapper createDefectServiceWrapper() throws MalformedURLException {
+        return new DefectServiceWrapper(logger, createDefectService());
     }
 
-    public ConfigurationService createConfigurationService() throws MalformedURLException, EncryptionException {
+    public ConfigurationService createConfigurationService() throws MalformedURLException {
         final ConfigurationServiceService configurationServiceService = new ConfigurationServiceService(
-                new URL(coverityServerConfig.getUrl(), CONFIGURATION_SERVICE_V9_WSDL),
-                new QName(COVERITY_V9_NAMESPACE, "ConfigurationServiceService"));
+            new URL(coverityHttpClient.getBaseUrl() + CONFIGURATION_SERVICE_V9_WSDL),
+            new QName(COVERITY_V9_NAMESPACE, "ConfigurationServiceService"));
 
         final ConfigurationService configurationService = configurationServiceService.getConfigurationServicePort();
-        attachAuthenticationHandler((BindingProvider) configurationService, coverityServerConfig.getUsername(), coverityServerConfig.getPassword());
+        attachAuthenticationHandler((BindingProvider) configurationService);
 
         return configurationService;
     }
 
-    public ViewService createViewService() throws EncryptionException {
-        final CredentialsRestConnection credentialsRestConnection = createCredentialsRestConnection();
-        final ViewService viewService = new ViewService(logger, credentialsRestConnection, gson);
-        return viewService;
+    public ViewService createViewService() {
+        return new ViewService(logger, coverityHttpClient, gson);
     }
 
-    public CredentialsRestConnection createCredentialsRestConnection() throws EncryptionException {
-        return new CredentialsRestConnection(logger, coverityServerConfig.getUrl(), coverityServerConfig.getUsername(), coverityServerConfig.getPassword(), 300, ProxyInfo.NO_PROXY_INFO);
-    }
-
-    public void connect() throws MalformedURLException, CoverityIntegrationException, EncryptionException {
+    public void connect() throws MalformedURLException, CoverityIntegrationException {
         final ConfigurationService configurationService = createConfigurationService();
         try {
-            configurationService.getUser(coverityServerConfig.getUsername());
+            final String username = coverityServerConfig.getCredentials().flatMap(Credentials::getUsername).orElse(null);
+            configurationService.getUser(username);
         } catch (SOAPFaultException | CovRemoteServiceException_Exception e) {
             if (StringUtils.isNotBlank(e.getMessage())) {
                 throw new CoverityIntegrationException(e.getMessage(), e);
@@ -141,32 +122,26 @@ public class WebServiceFactory {
         }
     }
 
-    public PhoneHomeService createPhoneHomeService(final ExecutorService executorService) {
-        final PhoneHomeService phoneHomeService = new PhoneHomeService(logger, executorService);
-        return phoneHomeService;
+    public IntLogger getLogger() {
+        return logger;
     }
 
-    public PhoneHomeCallable createCoverityPhoneHomeCallable(final URL productURL, final String artifactId, final String artifactVersion) throws MalformedURLException, EncryptionException {
-        final PhoneHomeCallable phoneHomeCallable = new CoverityPhoneHomeCallable(logger, createPhoneHomeClient(), createConfigurationService(), productURL, artifactId, artifactVersion, intEnvironmentVariables);
-        return phoneHomeCallable;
+    public CoverityHttpClient getCoverityHttpClient() {
+        return coverityHttpClient;
     }
 
-    public PhoneHomeCallable createCoverityPhoneHomeCallable(final URL productURL, final String artifactId, final String artifactVersion, final PhoneHomeRequestBody.Builder phoneHomeRequestBodyBuilder)
-            throws MalformedURLException, EncryptionException {
-        final PhoneHomeCallable phoneHomeCallable = new CoverityPhoneHomeCallable(logger, createPhoneHomeClient(), createConfigurationService(), productURL, artifactId, artifactVersion,
-                intEnvironmentVariables, phoneHomeRequestBodyBuilder);
-        return phoneHomeCallable;
+    public Gson getGson() {
+        return gson;
     }
 
-    public PhoneHomeClient createPhoneHomeClient() {
-        final HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
-        final String googleAnalyticsTrackingId = GoogleAnalyticsConstants.PRODUCTION_INTEGRATIONS_TRACKING_ID;
-        return new PhoneHomeClient(googleAnalyticsTrackingId, logger, httpClientBuilder, gson);
+    public IntEnvironmentVariables getEnvironmentVariables() {
+        return intEnvironmentVariables;
     }
 
-    private void attachAuthenticationHandler(final BindingProvider service, final String username, final String password) {
-        service.getBinding().setHandlerChain(Arrays.<Handler>asList(new ClientAuthenticationHandlerWSS(
-                username, password)));
+    private void attachAuthenticationHandler(final BindingProvider service) {
+        final String username = coverityServerConfig.getCredentials().flatMap(Credentials::getUsername).orElse(null);
+        final String password = coverityServerConfig.getCredentials().flatMap(Credentials::getPassword).orElse(null);
+        service.getBinding().setHandlerChain(Collections.singletonList(new ClientAuthenticationHandlerWSS(username, password)));
     }
 
 }

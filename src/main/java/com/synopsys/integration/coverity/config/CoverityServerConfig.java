@@ -25,42 +25,101 @@ package com.synopsys.integration.coverity.config;
 
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 
-import com.synopsys.integration.exception.EncryptionException;
+import com.google.gson.Gson;
+import com.synopsys.integration.builder.Buildable;
+import com.synopsys.integration.coverity.ws.WebServiceFactory;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.log.SilentIntLogger;
+import com.synopsys.integration.rest.client.ConnectionResult;
 import com.synopsys.integration.rest.credentials.Credentials;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.rest.request.Response;
+import com.synopsys.integration.rest.support.AuthenticationSupport;
+import com.synopsys.integration.util.IntEnvironmentVariables;
 import com.synopsys.integration.util.Stringable;
 
-public class CoverityServerConfig extends Stringable implements Serializable {
+public class CoverityServerConfig extends Stringable implements Buildable, Serializable {
     private static final long serialVersionUID = 8314444738247849945L;
+    private final URL coverityUrl;
+    private final Credentials credentials;
+    private final IntEnvironmentVariables intEnvironmentVariables;
+    private final Gson gson;
+    private final AuthenticationSupport authenticationSupport;
+    private final ExecutorService executorService;
+    private final boolean trustCert;
+    private final ProxyInfo proxyInfo;
+    private final int timeoutInSeconds;
 
-    private final URL url;
-    private final Credentials coverityCredentials;
-
-    public CoverityServerConfig(final URL url, final Credentials coverityCredentials) {
-        this.url = url;
-        this.coverityCredentials = coverityCredentials;
+    CoverityServerConfig(URL url, int timeoutInSeconds, Credentials credentials, ProxyInfo proxyInfo, boolean trustCert, IntEnvironmentVariables intEnvironmentVariables, Gson gson, AuthenticationSupport authenticationSupport,
+        ExecutorService executorService) {
+        this.credentials = credentials;
+        this.coverityUrl = url;
+        this.timeoutInSeconds = timeoutInSeconds;
+        this.proxyInfo = proxyInfo;
+        this.trustCert = trustCert;
+        this.intEnvironmentVariables = intEnvironmentVariables;
+        this.gson = gson;
+        this.authenticationSupport = authenticationSupport;
+        this.executorService = executorService;
     }
 
-    public URL getUrl() {
-        return url;
+    public static CoverityServerConfigBuilder newBuilder() {
+        return new CoverityServerConfigBuilder();
     }
 
-    public Credentials getCoverityCredentials() {
-        return coverityCredentials;
+    public boolean canConnect() {
+        return canConnect(new SilentIntLogger());
     }
 
-    public String getUsername() {
-        if (null != coverityCredentials) {
-            return coverityCredentials.getUsername();
+    public boolean canConnect(IntLogger logger) {
+        ConnectionResult connectionResult = attemptConnection(logger);
+        return connectionResult.isSuccess();
+    }
+
+    public ConnectionResult attemptConnection(IntLogger logger) {
+        String errorMessage = null;
+        int httpStatusCode = 0;
+
+        try {
+            CoverityHttpClient coverityHttpClient = createCoverityHttpClient(logger);
+            try (Response response = coverityHttpClient.attemptAuthentication()) {
+                // if you get an error response, you know that a connection could not be made
+                httpStatusCode = response.getStatusCode();
+                if (response.isStatusCodeError()) {
+                    errorMessage = response.getContentString();
+                }
+            }
+        } catch (Exception e) {
+            errorMessage = e.getMessage();
         }
-        return null;
+
+        if (null != errorMessage) {
+            logger.error(errorMessage);
+            return ConnectionResult.FAILURE(httpStatusCode, errorMessage);
+        }
+
+        logger.info("A successful connection was made.");
+        return ConnectionResult.SUCCESS(httpStatusCode);
     }
 
-    public String getPassword() throws EncryptionException {
-        if (null != coverityCredentials) {
-            return coverityCredentials.getDecryptedPassword();
-        }
-        return null;
+    public WebServiceFactory createWebServiceFactory(IntLogger logger) {
+        CoverityHttpClient httpClient = createCoverityHttpClient(logger);
+        return new WebServiceFactory(intEnvironmentVariables, gson, executorService, this, httpClient, logger);
+    }
+
+    public CoverityHttpClient createCoverityHttpClient(IntLogger logger) {
+        return new CoverityHttpClient(logger, timeoutInSeconds, trustCert, proxyInfo, getCoverityUrl().toString(), authenticationSupport, getCredentials().orElse(null));
+    }
+
+    public URL getCoverityUrl() {
+        return coverityUrl;
+    }
+
+    public Optional<Credentials> getCredentials() {
+        return Optional.ofNullable(credentials);
     }
 
 }
