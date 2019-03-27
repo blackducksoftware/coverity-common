@@ -12,22 +12,23 @@ addons:
       secure: "CXASzhjLBf/IRtyr85SNACDKwDd7/vYvXpxI2/xR5GeozLuR+PkumW0S/74/4yphbJQuLRF5eU9nx/vb7jUEg5tJBqfAsVdqdxXoa5vAbNV1EPLYBZrcJr/CG1mn8jcsKG4b9+B8jtHmLk+lAyQBYjjSuZThTlNx9YNA9psNIyN/p4is0sOjt882vYpvNMxOr5uH9nToepzCBjj070FmDmGmkzyVqzFse7uMSWMEG9UBQJfc8rrlWnlA9QsP17tCEZN0NRn3d/Q5/4EFxmp23XJxbjukehqpHM7yFkXpMeE6vRi8NdKTpSRhnn84jFhKTq4O9AvNKsEY6JRcOtVpcB4ZKH5tkZ3FdIImDvyijKStCzU/vJ/T69Y+heJKapvc7lBuQSd+D7L3rvrekHL+9PAc/9vsPRE+y2i3qaQG4Yu4G6lcSqmQVJ9GTFzEbsYWfdAESrdbu0jfCb0eIk7RY15KW2/aSfgz6TmhmwlBWCPVuWcG9wLWcB5KgcoMO3FXlKFWXZF3dYLP96F+3eI9AaZi8LjwJhg0AYC/pffz827qSV+YISPOf4rqd1sPBATnIFyVNMEkX2wtHUzudNcE6mTaDNRyG0ewGFS7Kflmkgtf9BqcgX2EiXRyToCmul2V0StbqM4COQ+1AvTTip0svQsGCS0x7eTwovB0Pb9AkzQ="
 
 jdk:
-- oraclejdk8
+  - oraclejdk8
 
 notifications:
   email:
     recipients:
-    - bdsoss@blackducksoftware.com
+      - bdsoss@blackducksoftware.com
 
 script:
-- "./gradlew clean build jacocoTestReport coveralls sonarqube"
+  - "./gradlew clean build jacocoTestReport coveralls sonarqube"
 
 after_success:
-- bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)
+  - export DETECT_GRADLE_EXCLUDED_CONFIGURATIONS=testCompile,testCompileClasspath,testRuntime,testRuntimeClasspath
+  - bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)
 
 cache:
   directories:
-  - "$HOME/.m2/repository"
-  - "$HOME/.sonar/cache"
-  - "$HOME/.gradle"
-  - ".gradle"
+    - "$HOME/.m2/repository"
+    - "$HOME/.sonar/cache"
+    - "$HOME/.gradle"
+    - ".gradle"
