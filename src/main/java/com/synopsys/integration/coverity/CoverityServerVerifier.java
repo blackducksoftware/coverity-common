@@ -43,7 +43,7 @@ public class CoverityServerVerifier {
             conn.connect();
             conn.getInputStream();
         } catch (final MalformedURLException e) {
-            throw new CoverityIntegrationException(e.getClass().getSimpleName() + ":" + e.getMessage(), e);
+            throw new CoverityIntegrationException(e.getClass().getSimpleName() + ": " + e.getMessage(), e);
         } catch (final FileNotFoundException e) {
             throw new CoverityIntegrationException("The Url does not appear to be a Coverity server:" + wsdlURL.toString(), e);
         } catch (final IOException e) {

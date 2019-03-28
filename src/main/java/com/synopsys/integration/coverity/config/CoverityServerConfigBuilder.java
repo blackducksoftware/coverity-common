@@ -89,13 +89,7 @@ public class CoverityServerConfigBuilder extends IntegrationBuilder<CoverityServ
     protected CoverityServerConfig buildWithoutValidation() {
         URL coverityUrl = null;
         try {
-            String tempUrl = getUrl();
-            if (!tempUrl.endsWith("/")) {
-                coverityUrl = new URL(tempUrl);
-            } else {
-                tempUrl = tempUrl.substring(0, tempUrl.length() - 1);
-                coverityUrl = new URL(tempUrl);
-            }
+            coverityUrl = new URL(getUrl());
         } catch (MalformedURLException e) {
         }
 
@@ -166,7 +160,12 @@ public class CoverityServerConfigBuilder extends IntegrationBuilder<CoverityServ
     }
 
     public CoverityServerConfigBuilder setUrl(String url) {
-        builderProperties.set(URL_KEY, url);
+        String sanitizedUrl = url;
+        if (url.endsWith("/")) {
+            sanitizedUrl = url.substring(0, url.length() - 1);
+        }
+
+        builderProperties.set(URL_KEY, sanitizedUrl);
         return this;
     }
 
