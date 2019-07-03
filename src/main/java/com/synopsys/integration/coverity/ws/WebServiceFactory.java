@@ -25,7 +25,6 @@ package com.synopsys.integration.coverity.ws;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
-import java.util.concurrent.ExecutorService;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
@@ -56,15 +55,13 @@ public class WebServiceFactory {
 
     private final CoverityServerConfig coverityServerConfig;
     private final CoverityHttpClient coverityHttpClient;
-    private final ExecutorService executorService;
     private final IntLogger logger;
     private final Gson gson;
     private final IntEnvironmentVariables intEnvironmentVariables;
 
-    public WebServiceFactory(IntEnvironmentVariables intEnvironmentVariables, Gson gson, ExecutorService executorService, CoverityServerConfig coverityServerConfig, CoverityHttpClient coverityHttpClient, IntLogger logger) {
+    public WebServiceFactory(IntEnvironmentVariables intEnvironmentVariables, Gson gson, CoverityServerConfig coverityServerConfig, CoverityHttpClient coverityHttpClient, IntLogger logger) {
         this.intEnvironmentVariables = intEnvironmentVariables;
         this.gson = gson;
-        this.executorService = executorService;
         this.coverityHttpClient = coverityHttpClient;
         this.coverityServerConfig = coverityServerConfig;
         this.logger = logger;

@@ -52,6 +52,10 @@ public class CoverityPhoneHomeRequestBuilder {
         builder.setArtifactVersion(versionName);
     }
 
+    public void setCustomerName(final String customerName) {
+        builder.setCustomerId(customerName);
+    }
+
     public void setCustomerDomainName(final String hostName) {
         builder.setHostName(hostName);
     }

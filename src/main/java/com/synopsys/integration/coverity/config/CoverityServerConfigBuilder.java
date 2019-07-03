@@ -27,9 +27,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,7 +48,6 @@ import com.synopsys.integration.rest.exception.IntegrationCertificateException;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
 import com.synopsys.integration.util.IntEnvironmentVariables;
-import com.synopsys.integration.util.NoThreadExecutorService;
 
 public class CoverityServerConfigBuilder extends IntegrationBuilder<CoverityServerConfig> {
     public static final BuilderPropertyKey URL_KEY = new BuilderPropertyKey("COVERITY_URL");
@@ -62,7 +59,6 @@ public class CoverityServerConfigBuilder extends IntegrationBuilder<CoverityServ
     private IntEnvironmentVariables intEnvironmentVariables = new IntEnvironmentVariables();
     private Gson gson = WebServiceFactory.createDefaultGson();
     private AuthenticationSupport authenticationSupport = new AuthenticationSupport();
-    private ExecutorService executorService = new NoThreadExecutorService();
 
     public CoverityServerConfigBuilder() {
         Set<BuilderPropertyKey> propertyKeys = new HashSet<>();
@@ -98,7 +94,7 @@ public class CoverityServerConfigBuilder extends IntegrationBuilder<CoverityServ
         credentialsBuilder.setUsernameAndPassword(username, password);
         Credentials credentials = credentialsBuilder.build();
 
-        return new CoverityServerConfig(coverityUrl, 120, credentials, ProxyInfo.NO_PROXY_INFO, false, intEnvironmentVariables, gson, authenticationSupport, executorService);
+        return new CoverityServerConfig(coverityUrl, 120, credentials, ProxyInfo.NO_PROXY_INFO, false, intEnvironmentVariables, gson, authenticationSupport);
     }
 
     @Override
@@ -200,15 +196,6 @@ public class CoverityServerConfigBuilder extends IntegrationBuilder<CoverityServ
         if (null != logger) {
             this.logger = logger;
         }
-        return this;
-    }
-
-    public Optional<ExecutorService> getExecutorService() {
-        return Optional.ofNullable(executorService);
-    }
-
-    public CoverityServerConfigBuilder setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
         return this;
     }
 

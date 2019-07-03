@@ -25,7 +25,6 @@ package com.synopsys.integration.coverity.config;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.builder.Buildable;
@@ -47,13 +46,11 @@ public class CoverityServerConfig extends Stringable implements Buildable, Seria
     private final IntEnvironmentVariables intEnvironmentVariables;
     private final Gson gson;
     private final AuthenticationSupport authenticationSupport;
-    private final ExecutorService executorService;
     private final boolean trustCert;
     private final ProxyInfo proxyInfo;
     private final int timeoutInSeconds;
 
-    CoverityServerConfig(URL url, int timeoutInSeconds, Credentials credentials, ProxyInfo proxyInfo, boolean trustCert, IntEnvironmentVariables intEnvironmentVariables, Gson gson, AuthenticationSupport authenticationSupport,
-        ExecutorService executorService) {
+    CoverityServerConfig(URL url, int timeoutInSeconds, Credentials credentials, ProxyInfo proxyInfo, boolean trustCert, IntEnvironmentVariables intEnvironmentVariables, Gson gson, AuthenticationSupport authenticationSupport) {
         this.credentials = credentials;
         this.coverityUrl = url;
         this.timeoutInSeconds = timeoutInSeconds;
@@ -62,7 +59,6 @@ public class CoverityServerConfig extends Stringable implements Buildable, Seria
         this.intEnvironmentVariables = intEnvironmentVariables;
         this.gson = gson;
         this.authenticationSupport = authenticationSupport;
-        this.executorService = executorService;
     }
 
     public static CoverityServerConfigBuilder newBuilder() {
@@ -106,7 +102,7 @@ public class CoverityServerConfig extends Stringable implements Buildable, Seria
 
     public WebServiceFactory createWebServiceFactory(IntLogger logger) {
         CoverityHttpClient httpClient = createCoverityHttpClient(logger);
-        return new WebServiceFactory(intEnvironmentVariables, gson, executorService, this, httpClient, logger);
+        return new WebServiceFactory(intEnvironmentVariables, gson, this, httpClient, logger);
     }
 
     public CoverityHttpClient createCoverityHttpClient(IntLogger logger) {

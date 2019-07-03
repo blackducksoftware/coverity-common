@@ -31,6 +31,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import com.google.gson.Gson;
 import com.synopsys.integration.coverity.config.CoverityHttpClient;
 import com.synopsys.integration.coverity.ws.v9.ConfigurationService;
+import com.synopsys.integration.coverity.ws.v9.LicenseDataObj;
 import com.synopsys.integration.coverity.ws.v9.VersionDataObj;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.phonehome.PhoneHomeClient;
@@ -97,6 +98,7 @@ public class CoverityPhoneHomeHelper {
         coverityPhoneHomeRequestBuilder.setProduct(ProductIdEnum.COVERITY);
         coverityPhoneHomeRequestBuilder.setProductVersion(getProductVersion());
 
+        coverityPhoneHomeRequestBuilder.setCustomerName(getCustomerName());
         coverityPhoneHomeRequestBuilder.setCustomerDomainName(coverityHttpClient.getBaseUrl());
 
         PhoneHomeRequestBody.Builder actualBuilder = coverityPhoneHomeRequestBuilder.getBuilder();
@@ -113,6 +115,16 @@ public class CoverityPhoneHomeHelper {
             return intEnvironmentVariables.getVariables();
         }
         return Collections.emptyMap();
+    }
+
+    private String getCustomerName() {
+        try {
+            final LicenseDataObj licenseDataObj = configurationService.getLicenseConfiguration();
+            return licenseDataObj.getCustomer();
+        } catch (final Exception e) {
+            logger.debug("Couldn't get the Coverity customer id: " + e.getMessage());
+        }
+        return PhoneHomeRequestBody.Builder.UNKNOWN_ID;
     }
 
     private String getProductVersion() {
