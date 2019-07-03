@@ -12,14 +12,14 @@ class CoverityVersionTest {
         assertTrue(3 == coverityVersion.minor)
         assertTrue(0 == coverityVersion.patch)
         assertTrue(0 == coverityVersion.hotfix)
-        assertFalse(coverityVersion.isSrmVersion)
+        assertFalse(coverityVersion.isSrmVersion())
 
         coverityVersion = new CoverityVersion(9, 3, 1, 2)
         assertTrue(9 == coverityVersion.major)
         assertTrue(3 == coverityVersion.minor)
         assertTrue(1 == coverityVersion.patch)
         assertTrue(2 == coverityVersion.hotfix)
-        assertFalse(coverityVersion.isSrmVersion)
+        assertFalse(coverityVersion.isSrmVersion())
     }
 
     @Test
@@ -40,7 +40,7 @@ class CoverityVersionTest {
         assertTrue(3 == coverityVersion.minor)
         assertTrue(0 == coverityVersion.patch)
         assertTrue(0 == coverityVersion.hotfix)
-        assertTrue(coverityVersion.isSrmVersion)
+        assertTrue(coverityVersion.isSrmVersion())
 
         optionalCoverityVersion = CoverityVersion.parse("9.3-1")
         assertTrue(optionalCoverityVersion.isPresent())
@@ -49,7 +49,7 @@ class CoverityVersionTest {
         assertTrue(3 == coverityVersion.minor)
         assertTrue(1 == coverityVersion.patch)
         assertTrue(0 == coverityVersion.hotfix)
-        assertTrue(coverityVersion.isSrmVersion)
+        assertTrue(coverityVersion.isSrmVersion())
 
         optionalCoverityVersion = CoverityVersion.parse("9.3-1-2")
         assertTrue(optionalCoverityVersion.isPresent())
@@ -58,7 +58,7 @@ class CoverityVersionTest {
         assertTrue(3 == coverityVersion.minor)
         assertTrue(1 == coverityVersion.patch)
         assertTrue(2 == coverityVersion.hotfix)
-        assertTrue(coverityVersion.isSrmVersion)
+        assertTrue(coverityVersion.isSrmVersion())
 
         optionalCoverityVersion = CoverityVersion.parse("9.3.1")
         assertTrue(optionalCoverityVersion.isPresent())
@@ -67,7 +67,7 @@ class CoverityVersionTest {
         assertTrue(3 == coverityVersion.minor)
         assertTrue(1 == coverityVersion.patch)
         assertTrue(0 == coverityVersion.hotfix)
-        assertFalse(coverityVersion.isSrmVersion)
+        assertFalse(coverityVersion.isSrmVersion())
 
         optionalCoverityVersion = CoverityVersion.parse("9.3.1.2")
         assertTrue(optionalCoverityVersion.isPresent())
@@ -76,7 +76,7 @@ class CoverityVersionTest {
         assertTrue(3 == coverityVersion.minor)
         assertTrue(1 == coverityVersion.patch)
         assertTrue(2 == coverityVersion.hotfix)
-        assertFalse(coverityVersion.isSrmVersion)
+        assertFalse(coverityVersion.isSrmVersion())
     }
 
     @Test
@@ -87,7 +87,6 @@ class CoverityVersionTest {
         coverityVersion = new CoverityVersion(9, 3, 1, 2)
         assertEquals("9.3.1.2", coverityVersion.toString())
 
-        coverityVersion.isSrmVersion = true
         coverityVersion.srmVersion = "Stuff"
         assertEquals("Stuff", coverityVersion.toString())
     }
@@ -121,14 +120,6 @@ class CoverityVersionTest {
     }
 
     @Test
-    public void testCmp() {
-        CoverityVersion coverityVersionOld = new CoverityVersion(0, 0)
-        assertTrue(-1 == coverityVersionOld.cmp(0, 1))
-        assertTrue(0 == coverityVersionOld.cmp(1, 1))
-        assertTrue(1 == coverityVersionOld.cmp(2, 1))
-    }
-
-    @Test
     public void testCompareToAnalysis() {
         CoverityVersion coverityVersionOld = new CoverityVersion(9, 3)
         CoverityVersion coverityVersionNewer = new CoverityVersion(9, 4, 1, 2)
@@ -156,7 +147,7 @@ class CoverityVersionTest {
         CoverityVersion coverityVersionOld = new CoverityVersion(8, 4)
         assertTrue(coverityVersionOld.equals(coverityVersionOld))
         assertFalse(coverityVersionOld.equals(null))
-        assertFalse(coverityVersionOld.equals(""))
+        assertFalse(coverityVersionOld.toString().equals(""))
 
         CoverityVersion coverityVersionNewer = new CoverityVersion(9, 4, 1, 2)
         assertFalse(coverityVersionOld.equals(coverityVersionNewer))
