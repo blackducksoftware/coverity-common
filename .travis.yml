@@ -20,7 +20,7 @@ notifications:
       - bdsoss@blackducksoftware.com
 
 script:
-  - "./gradlew clean build jacocoTestReport coveralls sonarqube"
+  - "./gradlew clean build jacocoTestReport coveralls sonarqube -Dsonar.exclusions=**/v9/*"
 
 after_success:
   - export DETECT_GRADLE_EXCLUDED_CONFIGURATIONS=testCompile,testCompileClasspath,testRuntime,testRuntimeClasspath
