@@ -76,7 +76,7 @@ public class ExecutableManager extends EnvironmentContributor {
                     }
                 }
             }
-        } catch (InterruptedException | ExecutableException e) {
+        } catch (final InterruptedException | ExecutableException e) {
             throw e;
         } catch (final Exception e) {
             throw new ExecutableRunnerException(e);
@@ -86,13 +86,14 @@ public class ExecutableManager extends EnvironmentContributor {
     public ProcessBuilder createProcessBuilder(final Executable executable) throws ExecutableException {
         final List<String> processedExecutableArguments = executable.processExecutableArguments();
         addCoverityBinToArguments(processedExecutableArguments);
+
         final ProcessBuilder processBuilder = new ProcessBuilder(processedExecutableArguments);
         processBuilder.directory(executable.getWorkingDirectory());
+
         final Map<String, String> processBuilderEnvironment = processBuilder.environment();
         final Map<String, String> executableEnvironment = executable.getEnvironmentVariables();
-        for (final String key : executableEnvironment.keySet()) {
-            populateEnvironmentMap(processBuilderEnvironment, key, executableEnvironment.get(key));
-        }
+        executableEnvironment.forEach((key, value) -> populateEnvironmentMap(processBuilderEnvironment, key, value));
+
         return processBuilder;
     }
 

@@ -23,18 +23,121 @@
 package com.synopsys.integration.coverity.ws.view;
 
 public class ViewRow {
-    public Long cid;
-    public String displayType;
-    public String displayImpact;
-    public String status;
-    public String firstDetected;
-    public String owner;
-    public String classification;
-    public String severity;
-    public String action;
-    public String displayComponent;
-    public String displayCategory;
-    public String displayFile;
-    public String displayFunction;
+    private Long cid;
+    private String displayType;
+    private String displayImpact;
+    private String status;
+    private String firstDetected;
+    private String owner;
+    private String classification;
+    private String severity;
+    private String action;
+    private String displayComponent;
+    private String displayCategory;
+    private String displayFile;
+    private String displayFunction;
 
+    public String getDisplayType() {
+        return displayType;
+    }
+
+    public void setDisplayType(final String displayType) {
+        this.displayType = displayType;
+    }
+
+    public Long getCid() {
+        return cid;
+    }
+
+    public void setCid(final Long cid) {
+        this.cid = cid;
+    }
+
+    public String getDisplayImpact() {
+        return displayImpact;
+    }
+
+    public void setDisplayImpact(final String displayImpact) {
+        this.displayImpact = displayImpact;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(final String status) {
+        this.status = status;
+    }
+
+    public String getFirstDetected() {
+        return firstDetected;
+    }
+
+    public void setFirstDetected(final String firstDetected) {
+        this.firstDetected = firstDetected;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(final String owner) {
+        this.owner = owner;
+    }
+
+    public String getClassification() {
+        return classification;
+    }
+
+    public void setClassification(final String classification) {
+        this.classification = classification;
+    }
+
+    public String getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(final String severity) {
+        this.severity = severity;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(final String action) {
+        this.action = action;
+    }
+
+    public String getDisplayComponent() {
+        return displayComponent;
+    }
+
+    public void setDisplayComponent(final String displayComponent) {
+        this.displayComponent = displayComponent;
+    }
+
+    public String getDisplayCategory() {
+        return displayCategory;
+    }
+
+    public void setDisplayCategory(final String displayCategory) {
+        this.displayCategory = displayCategory;
+    }
+
+    public String getDisplayFile() {
+        return displayFile;
+    }
+
+    public void setDisplayFile(final String displayFile) {
+        this.displayFile = displayFile;
+    }
+
+    public String getDisplayFunction() {
+        return displayFunction;
+    }
+
+    public void setDisplayFunction(final String displayFunction) {
+        this.displayFunction = displayFunction;
+    }
 }

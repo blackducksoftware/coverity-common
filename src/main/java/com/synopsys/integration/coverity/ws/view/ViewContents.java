@@ -25,8 +25,40 @@ package com.synopsys.integration.coverity.ws.view;
 import java.util.List;
 
 public class ViewContents {
-    public Long totalRows;
-    public Long rowsOffset;
-    public List<ViewColumn> columns;
-    public List<ViewRow> rows;
+    private Long totalRows;
+    private Long rowsOffset;
+    private List<ViewColumn> columns;
+    private List<ViewRow> rows;
+
+    public Long getTotalRows() {
+        return totalRows;
+    }
+
+    public void setTotalRows(final Long totalRows) {
+        this.totalRows = totalRows;
+    }
+
+    public Long getRowsOffset() {
+        return rowsOffset;
+    }
+
+    public void setRowsOffset(final Long rowsOffset) {
+        this.rowsOffset = rowsOffset;
+    }
+
+    public List<ViewColumn> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(final List<ViewColumn> columns) {
+        this.columns = columns;
+    }
+
+    public List<ViewRow> getRows() {
+        return rows;
+    }
+
+    public void setRows(final List<ViewRow> rows) {
+        this.rows = rows;
+    }
 }

@@ -43,8 +43,8 @@ import com.synopsys.integration.rest.request.Response;
  * Service for interacting with the Coverity Connect Views Service JSON API
  */
 public class ViewService {
-    public static String VIEWS_LINK = "/api/views/v1";
-    public static String VIEW_CONTENT_LINK = "/api/viewContents/issues/v1/";
+    public static final String VIEWS_LINK = "/api/views/v1";
+    public static final String VIEW_CONTENT_LINK = "/api/viewContents/issues/v1/";
     private final IntLogger logger;
     private final CoverityHttpClient coverityHttpClient;
     private final Gson gson;

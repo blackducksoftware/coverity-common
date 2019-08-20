@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.coverity.config;
 
-import java.io.Serializable;
 import java.net.URL;
 import java.util.Optional;
 
@@ -39,8 +38,7 @@ import com.synopsys.integration.rest.support.AuthenticationSupport;
 import com.synopsys.integration.util.IntEnvironmentVariables;
 import com.synopsys.integration.util.Stringable;
 
-public class CoverityServerConfig extends Stringable implements Buildable, Serializable {
-    private static final long serialVersionUID = 8314444738247849945L;
+public class CoverityServerConfig extends Stringable implements Buildable {
     private final URL coverityUrl;
     private final Credentials credentials;
     private final IntEnvironmentVariables intEnvironmentVariables;

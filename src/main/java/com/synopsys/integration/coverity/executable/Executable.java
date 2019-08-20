@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -68,8 +67,12 @@ public class Executable extends EnvironmentContributor {
     }
 
     public String getMaskedExecutableArguments(final List<String> arguments) throws ExecutableException {
-        Optional<Integer> passwordIndex = getPasswordIndex(arguments);
-        passwordIndex.ifPresent(integer -> arguments.set(integer, MASKED_PASSWORD));
+        int passwordIndex = getPasswordIndex(arguments);
+
+        if (passwordIndex != -1) {
+            arguments.set(passwordIndex, MASKED_PASSWORD);
+        }
+
         return StringUtils.join(arguments, ' ');
     }
 
@@ -84,33 +87,28 @@ public class Executable extends EnvironmentContributor {
     public List<String> processExecutableArguments() throws ExecutableException {
         // If the User provided the password as an argument, we want to set it as the environment variable of the process so it is not exposed when looking up the process
         // Passwords are provided using --password password OR --pa password
-        List<String> processedExecutableArguments = new ArrayList<>(getExecutableArguments());
+        final List<String> processedExecutableArguments = new ArrayList<>(getExecutableArguments());
 
-        Optional<Integer> passwordIndex = getPasswordIndex(processedExecutableArguments);
-        if (passwordIndex.isPresent()) {
-            int indexToRemove = passwordIndex.get();
-            String removedValue = processedExecutableArguments.remove(indexToRemove);
+        final int passwordIndex = getPasswordIndex(processedExecutableArguments);
+        if (passwordIndex != -1) {
+            final String removedValue = processedExecutableArguments.remove(passwordIndex);
             //also remove the argument before the password
-            processedExecutableArguments.remove(indexToRemove - 1);
+            processedExecutableArguments.remove(passwordIndex - 1);
             populateEnvironmentMap(getEnvironmentVariables(), CoverityToolEnvironmentVariable.PASSPHRASE, removedValue);
         }
         return processedExecutableArguments;
     }
 
-    private Optional<Integer> getPasswordIndex(List<String> list) throws ExecutableException {
+    private int getPasswordIndex(final List<String> list) throws ExecutableException {
         // Passwords are provided using --password password OR --pa password
-        Optional<Integer> passwordIndex = Optional.empty();
-        if (!list.isEmpty()) {
-            for (int i = 0; i < list.size(); i++) {
-                final String currentArgument = list.get(i);
-                if (currentArgument.equals("--password") || currentArgument.equals("--pa")) {
-                    if (i + 1 <= list.size() - 1) {
-                        if (passwordIndex.isPresent()) {
-                            throw new ExecutableException("Can not provide multiple password arguments.");
-                        }
-                        passwordIndex = Optional.of(i + 1);
-                    }
+        int passwordIndex = -1;
+        for (int i = 1; i < list.size(); i++) {
+            final String lastArgument = list.get(i - 1);
+            if (lastArgument.equals("--password") || lastArgument.equals("--pa")) {
+                if (passwordIndex != -1) {
+                    throw new ExecutableException("Cannot provide multiple password arguments.");
                 }
+                passwordIndex = i;
             }
         }
         return passwordIndex;

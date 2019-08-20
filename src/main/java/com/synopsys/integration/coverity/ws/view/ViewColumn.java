@@ -23,6 +23,22 @@
 package com.synopsys.integration.coverity.ws.view;
 
 public class ViewColumn {
-    public String name;
-    public String label;
+    private String name;
+    private String label;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(final String label) {
+        this.label = label;
+    }
 }
