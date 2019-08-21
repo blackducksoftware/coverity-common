@@ -13,6 +13,7 @@ addons:
 
 jdk:
   - oraclejdk8
+  - openjdk11
 
 notifications:
   email:
