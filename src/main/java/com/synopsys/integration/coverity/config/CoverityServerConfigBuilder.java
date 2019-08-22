@@ -85,7 +85,8 @@ public class CoverityServerConfigBuilder extends IntegrationBuilder<CoverityServ
         URL coverityUrl = null;
         try {
             coverityUrl = new URL(getUrl());
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException ignored) {
+            // Do nothing, coverityUrl stays null
         }
 
         String username = getUsername();

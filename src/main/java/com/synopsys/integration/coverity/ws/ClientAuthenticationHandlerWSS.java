@@ -56,11 +56,11 @@ public class ClientAuthenticationHandlerWSS implements SOAPHandler<SOAPMessageCo
 
     public ClientAuthenticationHandlerWSS(String userName, String password) {
         String xwssConfigText = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
-                                        "<xwss:SecurityConfiguration xmlns:xwss=\"http://java.sun.com/xml/ns/xwss/config\"> " +
-                                        "<xwss:UsernameToken name=\"" + StringEscapeUtils.escapeXml11(userName) + "\" " +
-                                        "password=\"" + StringEscapeUtils.escapeXml11(password) + "\" " +
-                                        "useNonce=\"false\" digestPassword=\"false\"/>  " +
-                                        "</xwss:SecurityConfiguration>";
+                                    "<xwss:SecurityConfiguration xmlns:xwss=\"http://java.sun.com/xml/ns/xwss/config\"> " +
+                                    "<xwss:UsernameToken name=\"" + StringEscapeUtils.escapeXml11(userName) + "\" " +
+                                    "password=\"" + StringEscapeUtils.escapeXml11(password) + "\" " +
+                                    "useNonce=\"false\" digestPassword=\"false\"/>  " +
+                                    "</xwss:SecurityConfiguration>";
         InputStream xwssConfig = new ByteArrayInputStream(xwssConfigText.getBytes(StandardCharsets.UTF_8));
         ClassLoader oldCCL = Thread.currentThread().getContextClassLoader();
         try {
@@ -79,11 +79,12 @@ public class ClientAuthenticationHandlerWSS implements SOAPHandler<SOAPMessageCo
     }
 
     public void close(MessageContext mc) {
+        // Do nothing
     }
 
     public Set<QName> getHeaders() {
         QName securityHeader = new QName(WSS_AUTH_URI, WSS_AUTH_LNAME, WSS_AUTH_PREFIX);
-        HashSet<QName> headers = new HashSet<QName>();
+        HashSet<QName> headers = new HashSet<>();
         headers.add(securityHeader);
         return headers;
     }
@@ -97,8 +98,6 @@ public class ClientAuthenticationHandlerWSS implements SOAPHandler<SOAPMessageCo
                 context.setSOAPMessage(msg);
                 SOAPMessage secureMsg = xwssProcessor.secureOutboundMessage(context);
                 smc.setMessage(secureMsg);
-            } catch (XWSSecurityException ex) {
-                throw new RuntimeException(ex);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -107,9 +106,8 @@ public class ClientAuthenticationHandlerWSS implements SOAPHandler<SOAPMessageCo
     }
 
     private static class SecurityEnvironmentHandler implements CallbackHandler {
-
         public void handle(Callback[] callbacks) throws UnsupportedCallbackException {
-
+            // Do nothing
         }
     }
 
