@@ -13,7 +13,7 @@ project.ext.moduleName = 'com.synopsys.integration.coverity-common'
 project.ext.javaUseAutoModuleName = 'true'
 
 group = 'com.synopsys.integration'
-version = '0.2.3-SNAPSHOT'
+version = '0.3.0-SNAPSHOT'
 description = 'A library for using various capabilities of Coverity.'
 
 apply plugin: 'com.blackducksoftware.integration.library'
@@ -30,7 +30,7 @@ dependencies {
     compile 'javax.xml.ws:jaxws-api:2.3.0'
     compile 'javax.jws:jsr181-api:1.0-MR1'
 
-    // Resolves CVE 2019-14379, 2019-12086, 2019-12384, 2019-12814, 2019-14439
+    // Resolves CVE 2019-14379, 2019-12086, 2019-12384, 2019-12814, 2019-14439 -- rotte 8/19
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.9.2'
 
     testCompile 'com.squareup.okhttp3:mockwebserver:3.9.0'
