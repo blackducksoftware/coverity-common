@@ -115,4 +115,8 @@ public class CoverityServerConfig extends Stringable implements Buildable {
         return Optional.ofNullable(credentials);
     }
 
+    public int getTimeoutInSeconds() {
+        return timeoutInSeconds;
+    }
+
 }

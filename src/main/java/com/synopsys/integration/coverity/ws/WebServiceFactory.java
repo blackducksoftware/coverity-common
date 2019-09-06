@@ -101,6 +101,10 @@ public class WebServiceFactory {
         return configurationService;
     }
 
+    public ConfigurationServiceWrapper createConfigurationServiceWrapper() throws MalformedURLException {
+        return new ConfigurationServiceWrapper(logger, createConfigurationService(), coverityServerConfig.getTimeoutInSeconds());
+    }
+
     public ViewService createViewService() {
         return new ViewService(logger, coverityHttpClient, gson);
     }
