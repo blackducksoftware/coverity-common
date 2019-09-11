@@ -70,7 +70,7 @@ public class ConfigurationServiceWrapper {
         } while (!matchingProject.isPresent() && System.currentTimeMillis() - startTime <= timeoutInSeconds * 1000);
 
         if (!matchingProject.isPresent()) {
-            logger.info("It was not possible to find a project named '%s' within the timeout (%ds) provided.");
+            logger.info(String.format("It was not possible to find a project named '%s' within the timeout (%ds) provided.", exactProjectName, timeoutInSeconds));
         }
 
         return matchingProject;
@@ -95,7 +95,7 @@ public class ConfigurationServiceWrapper {
         } while (!matchingStream.isPresent() && System.currentTimeMillis() - startTime <= timeoutInSeconds * 1000);
 
         if (!matchingStream.isPresent()) {
-            logger.info("It was not possible to find a stream named '%s' within the timeout (%ds) provided.");
+            logger.info(String.format("It was not possible to find a stream named '%s' within the timeout (%ds) provided.", exactStreamName, timeoutInSeconds));
         }
 
         return matchingStream;
