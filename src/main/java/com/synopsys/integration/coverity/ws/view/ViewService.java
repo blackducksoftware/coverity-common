@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.http.client.methods.HttpUriRequest;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -70,7 +72,7 @@ public class ViewService {
             json = jsonParser.parse(jsonString).getAsJsonObject();
         }
 
-        JsonArray viewsArray = ((JsonArray) json.get("views"));
+        final JsonArray viewsArray = ((JsonArray) json.get("views"));
 
         return StreamSupport.stream(viewsArray.spliterator(), false)
                    .map(JsonObject.class::cast)
@@ -80,13 +82,13 @@ public class ViewService {
                    .collect(Collectors.toMap(jsonView -> jsonView.get("id").getAsLong(), jsonView -> jsonView.get("name").getAsString()));
     }
 
-    private boolean viewHasTypeOfIssues(JsonObject jsonView) {
+    private boolean viewHasTypeOfIssues(final JsonObject jsonView) {
         return jsonView.has("type")
                    && jsonView.get("type") != null
                    && jsonView.get("type").getAsString().equals("issues");
     }
 
-    private boolean viewHasName(JsonObject jsonView) {
+    private boolean viewHasName(final JsonObject jsonView) {
         return jsonView.has("name")
                    && jsonView.get("name").getAsString() != null;
     }
@@ -100,9 +102,11 @@ public class ViewService {
         builder.addQueryParameter("offset", String.valueOf(offset));
         final Request request = builder.build();
 
-        logger.info("Retrieving View contents from " + viewsContentsUri);
+        final HttpUriRequest httpUriRequest = request.createHttpUriRequest(coverityHttpClient.getCommonRequestHeaders());
 
-        try (Response response = coverityHttpClient.execute(request)) {
+        logger.info("Retrieving View contents from " + httpUriRequest.getURI());
+
+        try (Response response = coverityHttpClient.execute(httpUriRequest)) {
             final String jsonString = response.getContentString();
 
             final JsonParser jsonParser = new JsonParser();
