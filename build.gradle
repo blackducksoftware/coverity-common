@@ -33,12 +33,13 @@ dependencies {
     compile 'javax.jws:jsr181-api:1.0-MR1'
     compile 'com.sun.xml.ws:jaxws-ri:2.3.2'
 
-    // Resolves CVE 2019-14379, 2019-12086, 2019-12384, 2019-12814, 2019-14439 -- rotte AUG 2019
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.9.2'
+    // Resolves CVE CVE-2019-14540 and CVE-2019-16335 -- rotte OCT 2019
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.10'
 
-    // Resolves CVE 2019-10086 -- rotte OCT 2019
+    // Resolves CVE 2019-10086 and CVE-2019-12402 -- rotte OCT 2019
     // Remove when integration-common is updated
     compile 'commons-beanutils:commons-beanutils:1.9.4'
+    compile 'org.apache.commons:commons-compress:1.19'
 
     testCompile 'com.squareup.okhttp3:mockwebserver:3.9.0'
     testCompile 'org.codehaus.groovy:groovy-all:2.4.12'
