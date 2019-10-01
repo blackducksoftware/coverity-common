@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
-    dependencies { classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.70' }
+    dependencies { classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+' }
 }
 
 plugins { id 'groovy' }
@@ -23,18 +23,22 @@ apply plugin: 'com.blackducksoftware.integration.library'
 nexusStaging { packageGroup = 'com.synopsys' }
 
 dependencies {
-    compile 'com.blackducksoftware.integration:phone-home-client:0.21.4'
-    compile 'com.blackducksoftware.integration:integration-rest:0.11.0'
+    compile 'com.blackducksoftware.integration:phone-home-client:0.21.6'
+    compile 'com.blackducksoftware.integration:integration-rest:0.11.1'
     compile 'com.sun.xml.xws:xws-security:3.0'
 
-    // Required for Java 11 -- rotte 8/19
+    // Required for Java 11 -- rotte AUG 2019
     compile 'javax.xml.bind:jaxb-api:2.3.0'
     compile 'javax.xml.ws:jaxws-api:2.3.0'
     compile 'javax.jws:jsr181-api:1.0-MR1'
     compile 'com.sun.xml.ws:jaxws-ri:2.3.2'
 
-    // Resolves CVE 2019-14379, 2019-12086, 2019-12384, 2019-12814, 2019-14439 -- rotte 8/19
+    // Resolves CVE 2019-14379, 2019-12086, 2019-12384, 2019-12814, 2019-14439 -- rotte AUG 2019
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.9.2'
+
+    // Resolves CVE 2019-10086 -- rotte OCT 2019
+    // Remove when integration-common is updated
+    compile 'commons-beanutils:commons-beanutils:1.9.4'
 
     testCompile 'com.squareup.okhttp3:mockwebserver:3.9.0'
     testCompile 'org.codehaus.groovy:groovy-all:2.4.12'
