@@ -13,7 +13,7 @@ project.ext.moduleName = 'com.synopsys.integration.coverity-common'
 project.ext.javaUseAutoModuleName = 'true'
 
 group = 'com.synopsys.integration'
-version = '0.4.3'
+version = '0.4.4-SNAPSHOT'
 description = 'A library for using various capabilities of Coverity.'
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
