@@ -24,17 +24,17 @@ package com.synopsys.integration.coverity.ws;
 
 import java.util.Optional;
 
-import com.synopsys.integration.coverity.ws.v9.ConfigurationService;
-import com.synopsys.integration.coverity.ws.v9.CovRemoteServiceException_Exception;
-import com.synopsys.integration.coverity.ws.v9.ProjectDataObj;
-import com.synopsys.integration.coverity.ws.v9.ProjectFilterSpecDataObj;
-import com.synopsys.integration.coverity.ws.v9.ProjectIdDataObj;
-import com.synopsys.integration.coverity.ws.v9.ProjectSpecDataObj;
-import com.synopsys.integration.coverity.ws.v9.StreamDataObj;
-import com.synopsys.integration.coverity.ws.v9.StreamFilterSpecDataObj;
-import com.synopsys.integration.coverity.ws.v9.StreamSpecDataObj;
-import com.synopsys.integration.coverity.ws.v9.TriageStoreDataObj;
-import com.synopsys.integration.coverity.ws.v9.TriageStoreFilterSpecDataObj;
+import com.synopsys.integration.coverity.api.ws.configuration.ConfigurationService;
+import com.synopsys.integration.coverity.api.ws.configuration.CovRemoteServiceException_Exception;
+import com.synopsys.integration.coverity.api.ws.configuration.ProjectDataObj;
+import com.synopsys.integration.coverity.api.ws.configuration.ProjectFilterSpecDataObj;
+import com.synopsys.integration.coverity.api.ws.configuration.ProjectIdDataObj;
+import com.synopsys.integration.coverity.api.ws.configuration.ProjectSpecDataObj;
+import com.synopsys.integration.coverity.api.ws.configuration.StreamDataObj;
+import com.synopsys.integration.coverity.api.ws.configuration.StreamFilterSpecDataObj;
+import com.synopsys.integration.coverity.api.ws.configuration.StreamSpecDataObj;
+import com.synopsys.integration.coverity.api.ws.configuration.TriageStoreDataObj;
+import com.synopsys.integration.coverity.api.ws.configuration.TriageStoreFilterSpecDataObj;
 import com.synopsys.integration.log.IntLogger;
 
 public class ConfigurationServiceWrapper {

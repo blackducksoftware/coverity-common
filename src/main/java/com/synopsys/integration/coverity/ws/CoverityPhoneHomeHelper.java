@@ -29,10 +29,10 @@ import java.util.concurrent.ExecutorService;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.coverity.api.ws.configuration.ConfigurationService;
+import com.synopsys.integration.coverity.api.ws.configuration.LicenseDataObj;
+import com.synopsys.integration.coverity.api.ws.configuration.VersionDataObj;
 import com.synopsys.integration.coverity.config.CoverityHttpClient;
-import com.synopsys.integration.coverity.ws.v9.ConfigurationService;
-import com.synopsys.integration.coverity.ws.v9.LicenseDataObj;
-import com.synopsys.integration.coverity.ws.v9.VersionDataObj;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.phonehome.PhoneHomeClient;
 import com.synopsys.integration.phonehome.PhoneHomeRequestBody;

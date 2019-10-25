@@ -25,15 +25,15 @@ package com.synopsys.integration.coverity.ws;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.synopsys.integration.coverity.api.ws.defect.CovRemoteServiceException_Exception;
+import com.synopsys.integration.coverity.api.ws.defect.DefectService;
+import com.synopsys.integration.coverity.api.ws.defect.MergedDefectDataObj;
+import com.synopsys.integration.coverity.api.ws.defect.MergedDefectFilterSpecDataObj;
+import com.synopsys.integration.coverity.api.ws.defect.MergedDefectsPageDataObj;
+import com.synopsys.integration.coverity.api.ws.defect.PageSpecDataObj;
+import com.synopsys.integration.coverity.api.ws.defect.SnapshotScopeSpecDataObj;
+import com.synopsys.integration.coverity.api.ws.defect.StreamIdDataObj;
 import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
-import com.synopsys.integration.coverity.ws.v9.CovRemoteServiceException_Exception;
-import com.synopsys.integration.coverity.ws.v9.DefectService;
-import com.synopsys.integration.coverity.ws.v9.MergedDefectDataObj;
-import com.synopsys.integration.coverity.ws.v9.MergedDefectFilterSpecDataObj;
-import com.synopsys.integration.coverity.ws.v9.MergedDefectsPageDataObj;
-import com.synopsys.integration.coverity.ws.v9.PageSpecDataObj;
-import com.synopsys.integration.coverity.ws.v9.SnapshotScopeSpecDataObj;
-import com.synopsys.integration.coverity.ws.v9.StreamIdDataObj;
 import com.synopsys.integration.log.IntLogger;
 
 public class DefectServiceWrapper {

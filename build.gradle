@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
-    dependencies { classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.73' }
+    dependencies { classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+' }
 }
 
 plugins { id 'groovy' }
@@ -20,18 +20,16 @@ targetCompatibility = JavaVersion.VERSION_11
 
 apply plugin: 'com.blackducksoftware.integration.library'
 
+repositories {
+    maven { url 'https://artifactory.internal.synopsys.com/artifactory/bds-integrations-snapshot/' }
+}
+
 nexusStaging { packageGroup = 'com.synopsys' }
 
 dependencies {
     compile 'com.blackducksoftware.integration:phone-home-client:0.21.6'
     compile 'com.blackducksoftware.integration:integration-rest:0.11.1'
-    compile 'com.sun.xml.xws:xws-security:3.0'
-
-    // Required for Java 11 -- rotte AUG 2019
-    compile 'javax.xml.bind:jaxb-api:2.3.0'
-    compile 'javax.xml.ws:jaxws-api:2.3.0'
-    compile 'javax.jws:jsr181-api:1.0-MR1'
-    compile 'com.sun.xml.ws:jaxws-ri:2.3.2'
+    compile 'com.synopsys.integration:coverity-common-api:2019.6.0-20191025.143058-2'
 
     // Resolves CVE CVE-2019-14540 and CVE-2019-16335 -- rotte OCT 2019
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.10'

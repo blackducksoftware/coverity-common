@@ -34,6 +34,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.synopsys.integration.coverity.api.rest.ViewContents;
 import com.synopsys.integration.coverity.config.CoverityHttpClient;
 import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
 import com.synopsys.integration.exception.IntegrationException;
