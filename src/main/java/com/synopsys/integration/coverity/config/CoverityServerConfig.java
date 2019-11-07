@@ -75,6 +75,7 @@ public class CoverityServerConfig extends Stringable implements Buildable {
     public ConnectionResult attemptConnection(IntLogger logger) {
         String errorMessage = null;
         int httpStatusCode = 0;
+        Exception e = null;
 
         try {
             CoverityHttpClient coverityHttpClient = createCoverityHttpClient(logger);
@@ -85,13 +86,14 @@ public class CoverityServerConfig extends Stringable implements Buildable {
                     errorMessage = response.getContentString();
                 }
             }
-        } catch (Exception e) {
-            errorMessage = e.getMessage();
+        } catch (Exception ex) {
+            e = ex;
+            errorMessage = ex.getMessage();
         }
 
         if (null != errorMessage) {
             logger.error(errorMessage);
-            return ConnectionResult.FAILURE(httpStatusCode, errorMessage);
+            return ConnectionResult.FAILURE(httpStatusCode, errorMessage, e);
         }
 
         logger.info("A successful connection was made.");
