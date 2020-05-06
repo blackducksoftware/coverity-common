@@ -21,7 +21,6 @@ targetCompatibility = JavaVersion.VERSION_11
 apply plugin: 'com.synopsys.integration.library'
 
 dependencies {
-    api 'com.synopsys.integration:phone-home-client:2.0.0'
     api 'com.synopsys.integration:integration-rest:1.0.3'
     api 'com.synopsys.integration:coverity-common-api:2019.6.0'
     api 'com.sun.xml.xws:xws-security:3.0'
