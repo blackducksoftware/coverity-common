@@ -1,7 +1,7 @@
 /**
  * coverity-common
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -23,24 +23,25 @@
 package com.synopsys.integration.coverity.ws.view;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.Map;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.apache.http.client.methods.HttpUriRequest;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
+import com.synopsys.integration.coverity.api.rest.View;
 import com.synopsys.integration.coverity.api.rest.ViewContents;
+import com.synopsys.integration.coverity.api.ws.configuration.ProjectDataObj;
 import com.synopsys.integration.coverity.config.CoverityHttpClient;
 import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.request.Request;
-import com.synopsys.integration.rest.request.Response;
+import com.synopsys.integration.rest.response.Response;
 
 /**
  * Service for interacting with the Coverity Connect Views Service JSON API
@@ -48,6 +49,8 @@ import com.synopsys.integration.rest.request.Response;
 public class ViewService {
     public static final String VIEWS_LINK = "/api/views/v1";
     public static final String VIEW_CONTENT_LINK = "/api/viewContents/issues/v1/";
+    public static final String VIEW_REPORT_LINK = "/reports.htm";
+
     private final IntLogger logger;
     private final CoverityHttpClient coverityHttpClient;
     private final Gson gson;
@@ -58,10 +61,7 @@ public class ViewService {
         this.gson = gson;
     }
 
-    /**
-     * Returns a Map of available Coverity connect views, using the numeric identifier as the key and name as value
-     */
-    public Map<Long, String> getViews() throws IOException, IntegrationException {
+    public List<View> getAllViews() throws IOException, IntegrationException {
         final JsonObject json;
 
         final Request.Builder builder = new Request.Builder(coverityHttpClient.getBaseUrl() + VIEWS_LINK);
@@ -73,32 +73,28 @@ public class ViewService {
             json = jsonParser.parse(jsonString).getAsJsonObject();
         }
 
-        final JsonArray viewsArray = ((JsonArray) json.get("views"));
-
-        return StreamSupport.stream(viewsArray.spliterator(), false)
-                   .map(JsonObject.class::cast)
-                   .filter(jsonView -> jsonView.has("id"))
-                   .filter(this::viewHasName)
-                   .filter(this::viewHasTypeOfIssues)
-                   .collect(Collectors.toMap(jsonView -> jsonView.get("id").getAsLong(), jsonView -> jsonView.get("name").getAsString()));
+        return gson.fromJson(json.get("views"), new TypeToken<List<View>>() {}.getType());
     }
 
-    private boolean viewHasTypeOfIssues(final JsonObject jsonView) {
-        return jsonView.has("type")
-                   && jsonView.get("type") != null
-                   && jsonView.get("type").getAsString().equals("issues");
+    public Optional<View> getViewByExactName(final String viewName) throws IOException, IntegrationException {
+        return getAllViews().stream()
+                   .filter(view -> view.name != null)
+                   .filter(view -> view.name.equals(viewName))
+                   .findFirst();
     }
 
-    private boolean viewHasName(final JsonObject jsonView) {
-        return jsonView.has("name")
-                   && jsonView.get("name").getAsString() != null;
+    public List<View> getAllIssueTypeViews() throws IOException, IntegrationException {
+        return getAllViews().stream()
+                   .filter(view -> view.type != null)
+                   .filter(view -> view.type.contains("issue"))
+                   .collect(Collectors.toList());
     }
 
-    public ViewContents getViewContents(final String projectId, final String connectView, final int pageSize, final int offset) throws IOException, IntegrationException {
-        final String viewsContentsUri = coverityHttpClient.getBaseUrl() + VIEW_CONTENT_LINK + URLEncoder.encode(connectView, "UTF-8");
+    public ViewContents getViewContents(final long projectKey, final long viewId, final int pageSize, final int offset) throws IOException, IntegrationException {
+        final String viewsContentsUri = coverityHttpClient.getBaseUrl() + VIEW_CONTENT_LINK + viewId;
 
         final Request.Builder builder = new Request.Builder(viewsContentsUri);
-        builder.addQueryParameter("projectId", projectId);
+        builder.addQueryParameter("projectId", String.valueOf(projectKey));
         builder.addQueryParameter("rowCount", String.valueOf(pageSize));
         builder.addQueryParameter("offset", String.valueOf(offset));
         final Request request = builder.build();
@@ -120,6 +116,14 @@ public class ViewService {
                 throw new CoverityIntegrationException("The View response does not appear to be in the expected format.");
             }
         }
+    }
+
+    public String getProjectViewReportUrl(final ProjectDataObj project, final View view) {
+        return getProjectViewReportUrl(project.getProjectKey(), view.id);
+    }
+
+    public String getProjectViewReportUrl(final long projectKey, final long viewId) {
+        return coverityHttpClient.getBaseUrl() + VIEW_REPORT_LINK + "#v" + viewId + "/p" + projectKey;
     }
 
 }

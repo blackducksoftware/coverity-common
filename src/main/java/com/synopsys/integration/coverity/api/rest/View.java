@@ -20,21 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.coverity.executable;
+package com.synopsys.integration.coverity.api.rest;
 
-public enum CoverityToolEnvironmentVariable implements SynopsysEnvironmentVariable {
-    USER("COV_USER"),
-    PASSPHRASE("COVERITY_PASSPHRASE"),
-    PASSPHRASE_FILE("COVERITY_PASSPHRASE_FILE");
+import java.util.List;
 
-    private final String name;
+import com.google.gson.annotations.SerializedName;
 
-    CoverityToolEnvironmentVariable(final String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return this.name;
-    }
+public class View {
+    @SerializedName("id")
+    public long id;
+    @SerializedName("type")
+    public String type;
+    @SerializedName("name")
+    public String name;
+    @SerializedName("groupBy")
+    public boolean groupBy;
+    @SerializedName("columns")
+    public List<ViewColumn> columns;
 }

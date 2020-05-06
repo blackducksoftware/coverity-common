@@ -1,7 +1,7 @@
 /**
  * coverity-common
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -37,7 +37,7 @@ import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.client.AuthenticatingIntHttpClient;
 import com.synopsys.integration.rest.credentials.Credentials;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
-import com.synopsys.integration.rest.request.Response;
+import com.synopsys.integration.rest.response.Response;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
 
 public class CoverityHttpClient extends AuthenticatingIntHttpClient {
@@ -88,7 +88,7 @@ public class CoverityHttpClient extends AuthenticatingIntHttpClient {
 
     @Override
     protected void completeAuthenticationRequest(final HttpUriRequest request, final Response response) {
-        validCredentials = response.isStatusCodeOkay();
+        validCredentials = response.isStatusCodeSuccess();
     }
 
     public String getBaseUrl() {
