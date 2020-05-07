@@ -90,6 +90,10 @@ public class ViewService {
                    .collect(Collectors.toList());
     }
 
+    public ViewContents getViewContents(final ProjectDataObj project, final View view, final int pageSize, final int offset) throws IOException, IntegrationException {
+        return getViewContents(project.getProjectKey(), view.id, pageSize, offset);
+    }
+    
     public ViewContents getViewContents(final long projectKey, final long viewId, final int pageSize, final int offset) throws IOException, IntegrationException {
         final String viewsContentsUri = coverityHttpClient.getBaseUrl() + VIEW_CONTENT_LINK + viewId;
 
