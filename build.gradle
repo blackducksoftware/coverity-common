@@ -1,10 +1,6 @@
 buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://plugins.gradle.org/m2/' }
-    }
-    dependencies { classpath 'com.synopsys.integration:common-gradle-plugin:1.1.1' }
+    apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
+    apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-dependencies.gradle', to: buildscript
 }
 
 plugins { id 'groovy' }
@@ -25,14 +21,12 @@ dependencies {
     api 'com.synopsys.integration:coverity-common-api:2019.6.0'
     api 'com.sun.xml.xws:xws-security:3.0'
 
-    // Resolves CVE CVE-2019-14540 and CVE-2019-16335 -- rotte OCT 2019
-    api 'com.fasterxml.jackson.core:jackson-databind:2.9.10'
-
     // Resolves CVE 2019-10086 and CVE-2019-12402 -- rotte OCT 2019
     // Remove when integration-common is updated
-    api 'commons-beanutils:commons-beanutils:1.9.4'
-    api 'org.apache.commons:commons-compress:1.19'
+    // api 'com.flipkart.zjsonpatch:zjsonpatch:0.4.10'
 
     testCompile 'com.squareup.okhttp3:mockwebserver:3.9.0'
     testCompile 'org.codehaus.groovy:groovy-all:2.4.12'
+    testCompile 'org.junit.jupiter:junit-jupiter-params:5.3.1'
+    testCompile 'org.mockito:mockito-junit-jupiter:3.3.3'
 }
