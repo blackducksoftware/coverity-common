@@ -1,0 +1,1 @@
+{"key":"5789a068e7b82e7f76c03b410e847efe","id":10001,"type":"Coverity authentication key","username":"admin","comments":{"port":"1784","host":"localhost","description":"adminKeyFile","creationDate":"2020-05-14T16:14:57.171Z","ssl":"false","expirationDate":"2050-05-14T16:14:57.158Z"},"domain":"local","version":2}

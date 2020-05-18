@@ -1,15 +1,19 @@
-package com.synopsys.integration.coverity.ws
+package com.synopsys.integration.coverity.ws;
 
-import org.junit.jupiter.api.Test
-import org.mockito.Mockito
+import static com.synopsys.integration.coverity.ws.ClientAuthenticationHandlerWSS.WSS_AUTH_LNAME;
+import static com.synopsys.integration.coverity.ws.ClientAuthenticationHandlerWSS.WSS_AUTH_PREFIX;
+import static com.synopsys.integration.coverity.ws.ClientAuthenticationHandlerWSS.WSS_AUTH_URI;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.xml.namespace.QName
-import javax.xml.ws.handler.MessageContext
-import javax.xml.ws.handler.soap.SOAPMessageContext
+import java.util.Set;
 
-import static com.synopsys.integration.coverity.ws.ClientAuthenticationHandlerWSS.*
-import static org.junit.jupiter.api.Assertions.assertEquals
-import static org.junit.jupiter.api.Assertions.assertTrue
+import javax.xml.namespace.QName;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.soap.SOAPMessageContext;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class ClientAuthenticationHandlerWSSTest {
     public final String testUsername = "username";
@@ -45,6 +49,8 @@ public class ClientAuthenticationHandlerWSSTest {
         assertTrue(clientAuthenticationHandlerWSS.handleMessage(mockedSoapMessageContext));
     }
 
-    //TODO: Implement this
-    public void testHandleOutboundMessage() {}
+    // @Test
+    public void testHandleOutboundMessage() {
+        //TODO: Implement this
+    }
 }
