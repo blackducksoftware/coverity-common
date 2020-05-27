@@ -76,11 +76,11 @@ public class WebServiceFactory {
     }
 
     public DefectService createDefectService() throws MalformedURLException {
-        final DefectServiceService defectServiceService = new DefectServiceService(
+        DefectServiceService defectServiceService = new DefectServiceService(
             new URL(coverityHttpClient.getBaseUrl() + DEFECT_SERVICE_V9_WSDL),
             new QName(COVERITY_V9_NAMESPACE, "DefectServiceService"));
 
-        final DefectService defectService = defectServiceService.getDefectServicePort();
+        DefectService defectService = defectServiceService.getDefectServicePort();
         attachAuthenticationHandler((BindingProvider) defectService);
 
         return defectService;
@@ -91,11 +91,11 @@ public class WebServiceFactory {
     }
 
     public ConfigurationService createConfigurationService() throws MalformedURLException {
-        final ConfigurationServiceService configurationServiceService = new ConfigurationServiceService(
+        ConfigurationServiceService configurationServiceService = new ConfigurationServiceService(
             new URL(coverityHttpClient.getBaseUrl() + CONFIGURATION_SERVICE_V9_WSDL),
             new QName(COVERITY_V9_NAMESPACE, "ConfigurationServiceService"));
 
-        final ConfigurationService configurationService = configurationServiceService.getConfigurationServicePort();
+        ConfigurationService configurationService = configurationServiceService.getConfigurationServicePort();
         attachAuthenticationHandler((BindingProvider) configurationService);
 
         return configurationService;
@@ -110,9 +110,9 @@ public class WebServiceFactory {
     }
 
     public void connect() throws MalformedURLException, CoverityIntegrationException {
-        final ConfigurationService configurationService = createConfigurationService();
+        ConfigurationService configurationService = createConfigurationService();
         try {
-            final String username = coverityServerConfig.getCredentials().flatMap(Credentials::getUsername).orElse(null);
+            String username = coverityServerConfig.getCredentials().flatMap(Credentials::getUsername).orElse(null);
             configurationService.getUser(username);
         } catch (SOAPFaultException | CovRemoteServiceException_Exception e) {
             if (StringUtils.isNotBlank(e.getMessage())) {
@@ -138,9 +138,9 @@ public class WebServiceFactory {
         return intEnvironmentVariables;
     }
 
-    private void attachAuthenticationHandler(final BindingProvider service) {
-        final String username = coverityServerConfig.getCredentials().flatMap(Credentials::getUsername).orElse(null);
-        final String password = coverityServerConfig.getCredentials().flatMap(Credentials::getPassword).orElse(null);
+    private void attachAuthenticationHandler(BindingProvider service) {
+        String username = coverityServerConfig.getCredentials().flatMap(Credentials::getUsername).orElse(null);
+        String password = coverityServerConfig.getCredentials().flatMap(Credentials::getPassword).orElse(null);
         service.getBinding().setHandlerChain(Collections.singletonList(new ClientAuthenticationHandlerWSS(username, password)));
     }
 

@@ -31,6 +31,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpUriRequest;
 
+import com.synopsys.integration.coverity.ws.view.ViewService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.HttpMethod;
@@ -77,17 +78,18 @@ public class CoverityHttpClient extends AuthenticatingIntHttpClient {
     }
 
     @Override
-    public boolean isAlreadyAuthenticated(final HttpUriRequest request) {
+    public boolean isAlreadyAuthenticated(HttpUriRequest request) {
         return validCredentials;
     }
 
     @Override
     public Response attemptAuthentication() throws IntegrationException {
-        return authenticationSupport.attemptAuthentication(this, getBaseUrl() + "/", "login", this.createRequestBuilder(HttpMethod.GET));
+        // Since the REST API for CIM is very narrow (consisting of only the ViewService) we attempt authentication simply by hitting an arbitrary endpoint that requires authentication. --rotte MAY 2020
+        return authenticationSupport.attemptAuthentication(this, getBaseUrl(), ViewService.VIEWS_LINK, this.createRequestBuilder(HttpMethod.GET));
     }
 
     @Override
-    protected void completeAuthenticationRequest(final HttpUriRequest request, final Response response) {
+    protected void completeAuthenticationRequest(HttpUriRequest request, Response response) {
         validCredentials = response.isStatusCodeSuccess();
     }
 
