@@ -57,7 +57,7 @@ public class CoverityServerConfigBuilder extends IntegrationBuilder<CoverityServ
     private final BuilderProperties builderProperties;
     private IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
     private IntEnvironmentVariables intEnvironmentVariables = new IntEnvironmentVariables();
-    private Gson gson = WebServiceFactory.createDefaultGson();
+    private final Gson gson = WebServiceFactory.createDefaultGson();
     private AuthenticationSupport authenticationSupport = new AuthenticationSupport();
 
     public CoverityServerConfigBuilder() {
@@ -99,7 +99,7 @@ public class CoverityServerConfigBuilder extends IntegrationBuilder<CoverityServ
     }
 
     @Override
-    protected void validate(final BuilderStatus builderStatus) {
+    protected void validate(BuilderStatus builderStatus) {
         CredentialsBuilder credentialsBuilder = Credentials.newBuilder();
         credentialsBuilder.setUsernameAndPassword(getUsername(), getPassword());
         BuilderStatus credentialsBuilderStatus = credentialsBuilder.validateAndGetBuilderStatus();
@@ -118,10 +118,11 @@ public class CoverityServerConfigBuilder extends IntegrationBuilder<CoverityServ
             try {
                 URL coverityUrl = new URL(getUrl());
                 coverityUrl.toURI();
-                CoverityServerVerifier.verifyIsCoverityServer(coverityUrl);
+                CoverityServerVerifier coverityServerVerifier = new CoverityServerVerifier();
+                coverityServerVerifier.verifyIsCoverityServer(coverityUrl);
             } catch (MalformedURLException | URISyntaxException e) {
                 builderStatus.addErrorMessage(String.format("The provided Coverity url (%s) is not a valid URL.", getUrl()));
-            } catch (final IntegrationException e) {
+            } catch (IntegrationException e) {
                 builderStatus.addErrorMessage(e.getMessage());
             }
         }
@@ -143,11 +144,11 @@ public class CoverityServerConfigBuilder extends IntegrationBuilder<CoverityServ
         return builderProperties.getProperties();
     }
 
-    public void setProperties(final Set<? extends Map.Entry<String, String>> propertyEntries) {
+    public void setProperties(Set<? extends Map.Entry<String, String>> propertyEntries) {
         builderProperties.setProperties(propertyEntries);
     }
 
-    public void setProperty(final String key, final String value) {
+    public void setProperty(String key, String value) {
         builderProperties.setProperty(key, value);
     }
 

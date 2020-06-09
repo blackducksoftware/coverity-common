@@ -35,7 +35,7 @@ public class ClientAuthenticationHandlerWSSTest {
 
         Set<QName> headers = clientAuthenticationHandlerWSS.getHeaders();
 
-        assertEquals(headers.size(), 1);
+        assertEquals(1, headers.size());
         assertEquals(headers.stream().findAny().orElse(null), expectedSecurityHeader);
     }
 

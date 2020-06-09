@@ -33,19 +33,19 @@ import com.synopsys.integration.coverity.ws.WebServiceFactory;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class CoverityServerVerifier {
-    public static void verifyIsCoverityServer(final URL coverityURL) throws IntegrationException {
+    public void verifyIsCoverityServer(URL coverityURL) throws IntegrationException {
         URL wsdlURL = null;
         try {
             wsdlURL = new URL(coverityURL.toString() + WebServiceFactory.CONFIGURATION_SERVICE_V9_WSDL);
-            final HttpURLConnection conn = (HttpURLConnection) wsdlURL.openConnection();
+            HttpURLConnection conn = (HttpURLConnection) wsdlURL.openConnection();
             conn.setRequestMethod("GET");
             conn.connect();
             conn.getInputStream();
-        } catch (final MalformedURLException e) {
+        } catch (MalformedURLException e) {
             throw new CoverityIntegrationException(e.getClass().getSimpleName() + ": " + e.getMessage(), e);
-        } catch (final FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new CoverityIntegrationException("The Url does not appear to be a Coverity server:" + wsdlURL.toString(), e);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new CoverityIntegrationException("The Url does not appear to be a Coverity server:" + wsdlURL.toString() + ", because: " + e.getMessage(), e);
         }
     }

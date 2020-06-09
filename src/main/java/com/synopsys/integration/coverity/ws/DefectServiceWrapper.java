@@ -40,23 +40,23 @@ public class DefectServiceWrapper {
     private final IntLogger logger;
     private final DefectService defectService;
 
-    public DefectServiceWrapper(final IntLogger logger, final DefectService defectService) {
+    public DefectServiceWrapper(IntLogger logger, DefectService defectService) {
         this.logger = logger;
         this.defectService = defectService;
     }
 
-    public List<MergedDefectDataObj> getDefectsForStream(final String streamName, final MergedDefectFilterSpecDataObj filter) throws CoverityIntegrationException {
-        final List<MergedDefectDataObj> mergeList = new ArrayList<MergedDefectDataObj>();
+    public List<MergedDefectDataObj> getDefectsForStream(String streamName, MergedDefectFilterSpecDataObj filter) throws CoverityIntegrationException {
+        List<MergedDefectDataObj> mergeList = new ArrayList<>();
         try {
-            final StreamIdDataObj streamId = new StreamIdDataObj();
+            StreamIdDataObj streamId = new StreamIdDataObj();
             streamId.setName(streamName);
-            final List<StreamIdDataObj> streamIds = new ArrayList<StreamIdDataObj>();
+            List<StreamIdDataObj> streamIds = new ArrayList<>();
             streamIds.add(streamId);
 
-            final SnapshotScopeSpecDataObj snapshotScope = new SnapshotScopeSpecDataObj();
+            SnapshotScopeSpecDataObj snapshotScope = new SnapshotScopeSpecDataObj();
             snapshotScope.setShowSelector("last()");
 
-            final PageSpecDataObj pageSpec = new PageSpecDataObj();
+            PageSpecDataObj pageSpec = new PageSpecDataObj();
             // The loop will pull up to the maximum amount of defect, doing per page size
             final int pageSize = 1000; // Size of page to be pulled
             int defectSize = 3000; // Maximum amount of defect to pull
@@ -67,11 +67,11 @@ public class DefectServiceWrapper {
                 pageSpec.setPageSize(pageSize);
                 pageSpec.setStartIndex(pageStart);
                 pageSpec.setSortAscending(true);
-                final MergedDefectsPageDataObj mergedDefectsForStreams = defectService.getMergedDefectsForStreams(streamIds, filter, pageSpec, snapshotScope);
+                MergedDefectsPageDataObj mergedDefectsForStreams = defectService.getMergedDefectsForStreams(streamIds, filter, pageSpec, snapshotScope);
                 defectSize = mergedDefectsForStreams.getTotalNumberOfRecords();
                 mergeList.addAll(mergedDefectsForStreams.getMergedDefects());
             }
-        } catch (final CovRemoteServiceException_Exception e) {
+        } catch (CovRemoteServiceException_Exception e) {
             throw new CoverityIntegrationException(String.format("An unexpected error occurred fetching defects for stream %s. %s.", streamName, e.getMessage()), e);
         }
         return mergeList;
