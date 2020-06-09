@@ -35,6 +35,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.coverity.api.rest.View;
 import com.synopsys.integration.coverity.api.rest.ViewContents;
+import com.synopsys.integration.coverity.api.rest.ViewType;
 import com.synopsys.integration.coverity.api.ws.configuration.ProjectDataObj;
 import com.synopsys.integration.coverity.config.CoverityHttpClient;
 import com.synopsys.integration.coverity.exception.CoverityIntegrationException;
@@ -48,70 +49,70 @@ import com.synopsys.integration.rest.response.Response;
  */
 public class ViewService {
     public static final String VIEWS_LINK = "/api/views/v1";
-    public static final String VIEW_CONTENT_LINK = "/api/viewContents/issues/v1/";
+    public static final String VIEW_CONTENT_PREFIX = "/api/viewContents/";
     public static final String VIEW_REPORT_LINK = "/reports.htm";
 
     private final IntLogger logger;
     private final CoverityHttpClient coverityHttpClient;
     private final Gson gson;
 
-    public ViewService(final IntLogger logger, final CoverityHttpClient coverityHttpClient, final Gson gson) {
+    public ViewService(IntLogger logger, CoverityHttpClient coverityHttpClient, Gson gson) {
         this.logger = logger;
         this.coverityHttpClient = coverityHttpClient;
         this.gson = gson;
     }
 
     public List<View> getAllViews() throws IOException, IntegrationException {
-        final JsonObject json;
+        JsonObject json;
 
-        final Request.Builder builder = new Request.Builder(coverityHttpClient.getBaseUrl() + VIEWS_LINK);
-        final Request request = builder.build();
+        Request.Builder builder = new Request.Builder(coverityHttpClient.getBaseUrl() + VIEWS_LINK);
+        Request request = builder.build();
 
         try (Response response = coverityHttpClient.execute(request)) {
-            final String jsonString = response.getContentString();
-            final JsonParser jsonParser = new JsonParser();
+            String jsonString = response.getContentString();
+            JsonParser jsonParser = new JsonParser();
             json = jsonParser.parse(jsonString).getAsJsonObject();
         }
 
         return gson.fromJson(json.get("views"), new TypeToken<List<View>>() {}.getType());
     }
 
-    public Optional<View> getViewByExactName(final String viewName) throws IOException, IntegrationException {
+    public Optional<View> getViewByExactName(String viewName) throws IOException, IntegrationException {
         return getAllViews().stream()
                    .filter(view -> view.name != null)
                    .filter(view -> view.name.equals(viewName))
                    .findFirst();
     }
 
-    public List<View> getAllIssueTypeViews() throws IOException, IntegrationException {
+    public List<View> getAllViewsOfType(ViewType viewType) throws IOException, IntegrationException {
         return getAllViews().stream()
                    .filter(view -> view.type != null)
-                   .filter(view -> view.type.contains("issue"))
+                   .filter(view -> view.type.equals(viewType.toString()))
                    .collect(Collectors.toList());
     }
 
-    public ViewContents getViewContents(final ProjectDataObj project, final View view, final int pageSize, final int offset) throws IOException, IntegrationException {
-        return getViewContents(project.getProjectKey(), view.id, pageSize, offset);
+    public ViewContents getViewContents(ProjectDataObj project, View view, int pageSize, int offset) throws IOException, IntegrationException {
+        return getViewContents(project.getProjectKey(), view.type, view.id, pageSize, offset);
     }
-    
-    public ViewContents getViewContents(final long projectKey, final long viewId, final int pageSize, final int offset) throws IOException, IntegrationException {
-        final String viewsContentsUri = coverityHttpClient.getBaseUrl() + VIEW_CONTENT_LINK + viewId;
 
-        final Request.Builder builder = new Request.Builder(viewsContentsUri);
+    public ViewContents getViewContents(long projectKey, String viewType, long viewId, int pageSize, int offset) throws IOException, IntegrationException {
+        String viewsContentsUri = coverityHttpClient.getBaseUrl() + VIEW_CONTENT_PREFIX + viewType + "/v1/" + viewId;
+
+        Request.Builder builder = new Request.Builder(viewsContentsUri);
         builder.addQueryParameter("projectId", String.valueOf(projectKey));
         builder.addQueryParameter("rowCount", String.valueOf(pageSize));
         builder.addQueryParameter("offset", String.valueOf(offset));
-        final Request request = builder.build();
+        Request request = builder.build();
 
-        final HttpUriRequest httpUriRequest = request.createHttpUriRequest(coverityHttpClient.getCommonRequestHeaders());
+        HttpUriRequest httpUriRequest = request.createHttpUriRequest(coverityHttpClient.getCommonRequestHeaders());
 
         logger.info("Retrieving View contents from " + httpUriRequest.getURI());
 
         try (Response response = coverityHttpClient.execute(httpUriRequest)) {
-            final String jsonString = response.getContentString();
+            String jsonString = response.getContentString();
 
-            final JsonParser jsonParser = new JsonParser();
-            final JsonObject json = jsonParser.parse(jsonString).getAsJsonObject();
+            JsonParser jsonParser = new JsonParser();
+            JsonObject json = jsonParser.parse(jsonString).getAsJsonObject();
 
             if (json.has("viewContentsV1")) {
                 return gson.fromJson(json.get("viewContentsV1"), ViewContents.class);
@@ -122,11 +123,11 @@ public class ViewService {
         }
     }
 
-    public String getProjectViewReportUrl(final ProjectDataObj project, final View view) {
+    public String getProjectViewReportUrl(ProjectDataObj project, View view) {
         return getProjectViewReportUrl(project.getProjectKey(), view.id);
     }
 
-    public String getProjectViewReportUrl(final long projectKey, final long viewId) {
+    public String getProjectViewReportUrl(long projectKey, long viewId) {
         return coverityHttpClient.getBaseUrl() + VIEW_REPORT_LINK + "#v" + viewId + "/p" + projectKey;
     }
 
