@@ -16,6 +16,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpUriRequest;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.coverity.ws.view.ViewService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
@@ -33,8 +34,8 @@ public class CoverityHttpClient extends AuthenticatingIntHttpClient {
     private final AuthenticationSupport authenticationSupport;
     private Boolean validCredentials;
 
-    public CoverityHttpClient(IntLogger logger, int timeout, boolean alwaysTrustServerCertificate, ProxyInfo proxyInfo, String baseUrl, AuthenticationSupport authenticationSupport, Credentials credentials) {
-        super(logger, timeout, alwaysTrustServerCertificate, proxyInfo);
+    public CoverityHttpClient(IntLogger logger, Gson gson, int timeout, boolean alwaysTrustServerCertificate, ProxyInfo proxyInfo, String baseUrl, AuthenticationSupport authenticationSupport, Credentials credentials) {
+        super(logger, gson, timeout, alwaysTrustServerCertificate, proxyInfo);
         this.baseUrl = baseUrl;
         this.credentials = credentials;
         this.authenticationSupport = authenticationSupport;

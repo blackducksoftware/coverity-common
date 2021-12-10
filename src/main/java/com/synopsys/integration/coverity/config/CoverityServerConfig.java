@@ -91,7 +91,7 @@ public class CoverityServerConfig extends Stringable implements Buildable {
     }
 
     public CoverityHttpClient createCoverityHttpClient(IntLogger logger) {
-        return new CoverityHttpClient(logger, timeoutInSeconds, trustCert, proxyInfo, getCoverityUrl().toString(), authenticationSupport, getCredentials().orElse(null));
+        return new CoverityHttpClient(logger, gson, timeoutInSeconds, trustCert, proxyInfo, getCoverityUrl().toString(), authenticationSupport, getCredentials().orElse(null));
     }
 
     public URL getCoverityUrl() {
