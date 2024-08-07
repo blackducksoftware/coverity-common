@@ -53,20 +53,16 @@ public class ClientAuthenticationHandlerWSS implements SOAPHandler<SOAPMessageCo
                     header = envelope.addHeader();
                 }
 
-                // Add WS-Security header
                 SOAPElement security = header.addChildElement(WSS_AUTH_LNAME, WSS_AUTH_PREFIX, WSS_AUTH_URI);
                 security.addNamespaceDeclaration(WSU_NAMESPACE_PREFIX, NAMESPACE_URI);
 
-                // Add UsernameToken
                 SOAPElement usernameToken = security.addChildElement(USERNAME_TOKEN, WSS_AUTH_PREFIX);
                 usernameToken.addAttribute(new QName(USERNAME_TOKEN_QNAME_LPART),
                         USERNAME_TOKEN + "-" + UUID.randomUUID().toString());
 
-                // Add Username
                 SOAPElement usernameElement = usernameToken.addChildElement(USERNAME, WSS_AUTH_PREFIX);
                 usernameElement.addTextNode(username);
 
-                // Add Password
                 SOAPElement passwordElement = usernameToken.addChildElement(PASSWORD, WSS_AUTH_PREFIX);
                 passwordElement.addTextNode(password);
                 passwordElement.addAttribute(new QName(TYPE), PASSWORD_QNAME_VALUE);
