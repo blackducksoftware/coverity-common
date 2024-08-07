@@ -22,9 +22,17 @@ import java.util.UUID;
  */
 
 public class ClientAuthenticationHandlerWSS implements SOAPHandler<SOAPMessageContext> {
+    public static final String WSS_AUTH_URI = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
+    public static final String NAMESPACE_URI = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd";
+    public static final String PASSWORD_QNAME_VALUE = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText";
     public static final String WSS_AUTH_PREFIX = "wsse";
     public static final String WSS_AUTH_LNAME = "Security";
-    public static final String WSS_AUTH_URI = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
+    public static final String WSU_NAMESPACE_PREFIX = "wsu";
+    public static final String USERNAME = "Username";
+    public static final String PASSWORD = "Password";
+    public static final String USERNAME_TOKEN = "UsernameToken";
+    public static final String USERNAME_TOKEN_QNAME_LPART = "wsu:Id";
+    public static final String TYPE = "Type";
     private final String username;
     private final String password;
 
@@ -46,21 +54,22 @@ public class ClientAuthenticationHandlerWSS implements SOAPHandler<SOAPMessageCo
                 }
 
                 // Add WS-Security header
-                SOAPElement security = header.addChildElement("Security", "wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd");
-                security.addNamespaceDeclaration("wsu", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd");
+                SOAPElement security = header.addChildElement(WSS_AUTH_LNAME, WSS_AUTH_PREFIX, WSS_AUTH_URI);
+                security.addNamespaceDeclaration(WSU_NAMESPACE_PREFIX, NAMESPACE_URI);
 
                 // Add UsernameToken
-                SOAPElement usernameToken = security.addChildElement("UsernameToken", "wsse");
-                usernameToken.addAttribute(new QName("wsu:Id"), "UsernameToken-" + UUID.randomUUID().toString());
+                SOAPElement usernameToken = security.addChildElement(USERNAME_TOKEN, WSS_AUTH_PREFIX);
+                usernameToken.addAttribute(new QName(USERNAME_TOKEN_QNAME_LPART),
+                        USERNAME_TOKEN + "-" + UUID.randomUUID().toString());
 
                 // Add Username
-                SOAPElement usernameElement = usernameToken.addChildElement("Username", "wsse");
+                SOAPElement usernameElement = usernameToken.addChildElement(USERNAME, WSS_AUTH_PREFIX);
                 usernameElement.addTextNode(username);
 
                 // Add Password
-                SOAPElement passwordElement = usernameToken.addChildElement("Password", "wsse");
+                SOAPElement passwordElement = usernameToken.addChildElement(PASSWORD, WSS_AUTH_PREFIX);
                 passwordElement.addTextNode(password);
-                passwordElement.addAttribute(new QName("Type"), "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText");
+                passwordElement.addAttribute(new QName(TYPE), PASSWORD_QNAME_VALUE);
 
                 message.saveChanges();
             } catch (SOAPException e) {
@@ -77,10 +86,11 @@ public class ClientAuthenticationHandlerWSS implements SOAPHandler<SOAPMessageCo
 
     @Override
     public void close(MessageContext context) {
+        // Do nothing
     }
 
     @Override
     public Set<QName> getHeaders() {
-        return Collections.singleton(new QName("http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd", "Security"));
+        return Collections.singleton(new QName(WSS_AUTH_URI, WSS_AUTH_LNAME));
     }
 }
