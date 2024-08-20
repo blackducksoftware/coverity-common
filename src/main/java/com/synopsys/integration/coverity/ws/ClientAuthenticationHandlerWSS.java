@@ -28,8 +28,8 @@ public class ClientAuthenticationHandlerWSS implements SOAPHandler<SOAPMessageCo
     public static final String WSS_AUTH_PREFIX = "wsse";
     public static final String WSS_AUTH_LNAME = "Security";
     public static final String WSU_NAMESPACE_PREFIX = "wsu";
-    public static final String USERNAME = "Username";
-    public static final String PASSWORD = "Password";
+    public static final String USERNAME_LNAME = "Username";
+    public static final String PASSWORD_LNAME = "Password";
     public static final String USERNAME_TOKEN = "UsernameToken";
     public static final String USERNAME_TOKEN_QNAME_LPART = "wsu:Id";
     public static final String TYPE = "Type";
@@ -60,10 +60,10 @@ public class ClientAuthenticationHandlerWSS implements SOAPHandler<SOAPMessageCo
                 usernameToken.addAttribute(new QName(USERNAME_TOKEN_QNAME_LPART),
                         USERNAME_TOKEN + "-" + UUID.randomUUID().toString());
 
-                SOAPElement usernameElement = usernameToken.addChildElement(USERNAME, WSS_AUTH_PREFIX);
+                SOAPElement usernameElement = usernameToken.addChildElement(USERNAME_LNAME, WSS_AUTH_PREFIX);
                 usernameElement.addTextNode(username);
 
-                SOAPElement passwordElement = usernameToken.addChildElement(PASSWORD, WSS_AUTH_PREFIX);
+                SOAPElement passwordElement = usernameToken.addChildElement(PASSWORD_LNAME, WSS_AUTH_PREFIX);
                 passwordElement.addTextNode(password);
                 passwordElement.addAttribute(new QName(TYPE), PASSWORD_QNAME_VALUE);
 
