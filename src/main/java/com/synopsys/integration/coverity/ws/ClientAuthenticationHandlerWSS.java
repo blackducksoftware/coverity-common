@@ -7,93 +7,90 @@
  */
 package com.synopsys.integration.coverity.ws;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-
-import org.apache.commons.text.StringEscapeUtils;
-
-import com.sun.xml.wss.ProcessingContext;
-import com.sun.xml.wss.XWSSProcessor;
-import com.sun.xml.wss.XWSSProcessorFactory;
-import com.sun.xml.wss.XWSSecurityException;
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * SOAP handler for user authentication using ws-security.  This mechanism inserts the user's user name and password in
  * the SOAP header of each message.
  */
+
 public class ClientAuthenticationHandlerWSS implements SOAPHandler<SOAPMessageContext> {
+    public static final String WSS_AUTH_URI = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
+    public static final String NAMESPACE_URI = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd";
+    public static final String PASSWORD_QNAME_VALUE = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText";
     public static final String WSS_AUTH_PREFIX = "wsse";
     public static final String WSS_AUTH_LNAME = "Security";
-    public static final String WSS_AUTH_URI = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
-    private XWSSProcessor xwssProcessor = null;
+    public static final String WSU_NAMESPACE_PREFIX = "wsu";
+    public static final String USERNAME_LNAME = "Username";
+    public static final String PASSWORD_LNAME = "Password";
+    public static final String USERNAME_TOKEN = "UsernameToken";
+    public static final String USERNAME_TOKEN_QNAME_LPART = "wsu:Id";
+    public static final String TYPE = "Type";
+    private final String username;
+    private final String password;
 
-    public ClientAuthenticationHandlerWSS(String userName, String password) {
-        String xwssConfigText = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
-                                    "<xwss:SecurityConfiguration xmlns:xwss=\"http://java.sun.com/xml/ns/xwss/config\"> " +
-                                    "<xwss:UsernameToken name=\"" + StringEscapeUtils.escapeXml11(userName) + "\" " +
-                                    "password=\"" + StringEscapeUtils.escapeXml11(password) + "\" " +
-                                    "useNonce=\"false\" digestPassword=\"false\"/>  " +
-                                    "</xwss:SecurityConfiguration>";
-        InputStream xwssConfig = new ByteArrayInputStream(xwssConfigText.getBytes(StandardCharsets.UTF_8));
-        ClassLoader oldCCL = Thread.currentThread().getContextClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-            XWSSProcessorFactory factory = XWSSProcessorFactory.newInstance();
-            xwssProcessor = factory.createProcessorForSecurityConfiguration(xwssConfig, new SecurityEnvironmentHandler());
-        } catch (XWSSecurityException se) {
-            throw new RuntimeException(se);
-        } finally {
-            Thread.currentThread().setContextClassLoader(oldCCL);
-        }
+    public ClientAuthenticationHandlerWSS(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
-    public boolean handleFault(SOAPMessageContext mc) {
-        return true;
-    }
-
-    public void close(MessageContext mc) {
-        // Do nothing
-    }
-
-    public Set<QName> getHeaders() {
-        QName securityHeader = new QName(WSS_AUTH_URI, WSS_AUTH_LNAME, WSS_AUTH_PREFIX);
-        HashSet<QName> headers = new HashSet<>();
-        headers.add(securityHeader);
-        return headers;
-    }
-
-    public boolean handleMessage(SOAPMessageContext smc) {
-        Boolean outbound = ((Boolean) smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY));
-        SOAPMessage msg = smc.getMessage();
-        if (outbound) {
+    @Override
+    public boolean handleMessage(SOAPMessageContext context) {
+        Boolean outbound = (Boolean) context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+        if (outbound != null && outbound) {
             try {
-                ProcessingContext context = xwssProcessor.createProcessingContext(msg);
-                context.setSOAPMessage(msg);
-                SOAPMessage secureMsg = xwssProcessor.secureOutboundMessage(context);
-                smc.setMessage(secureMsg);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                SOAPMessage message = context.getMessage();
+                SOAPEnvelope envelope = message.getSOAPPart().getEnvelope();
+                SOAPHeader header = envelope.getHeader();
+                if (header == null) {
+                    header = envelope.addHeader();
+                }
+
+                SOAPElement security = header.addChildElement(WSS_AUTH_LNAME, WSS_AUTH_PREFIX, WSS_AUTH_URI);
+                security.addNamespaceDeclaration(WSU_NAMESPACE_PREFIX, NAMESPACE_URI);
+
+                SOAPElement usernameToken = security.addChildElement(USERNAME_TOKEN, WSS_AUTH_PREFIX);
+                usernameToken.addAttribute(new QName(USERNAME_TOKEN_QNAME_LPART),
+                        USERNAME_TOKEN + "-" + UUID.randomUUID().toString());
+
+                SOAPElement usernameElement = usernameToken.addChildElement(USERNAME_LNAME, WSS_AUTH_PREFIX);
+                usernameElement.addTextNode(username);
+
+                SOAPElement passwordElement = usernameToken.addChildElement(PASSWORD_LNAME, WSS_AUTH_PREFIX);
+                passwordElement.addTextNode(password);
+                passwordElement.addAttribute(new QName(TYPE), PASSWORD_QNAME_VALUE);
+
+                message.saveChanges();
+            } catch (SOAPException e) {
+                throw new RuntimeException("Error adding WS-Security header", e);
             }
         }
         return true;
     }
 
-    private static class SecurityEnvironmentHandler implements CallbackHandler {
-        public void handle(Callback[] callbacks) throws UnsupportedCallbackException {
-            // Do nothing
-        }
+    @Override
+    public boolean handleFault(SOAPMessageContext context) {
+        return true;
     }
 
+    @Override
+    public void close(MessageContext context) {
+        // Do nothing
+    }
+
+    @Override
+    public Set<QName> getHeaders() {
+        return Collections.singleton(new QName(WSS_AUTH_URI, WSS_AUTH_LNAME));
+    }
 }
