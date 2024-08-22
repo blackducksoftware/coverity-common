@@ -1,6 +1,10 @@
 buildscript {
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
-    apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-dependencies.gradle', to: buildscript
+    apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-cgp-version.gradle'
+
+    dependencies {
+        classpath "com.synopsys.integration:common-gradle-plugin:${managedCgpVersion}"
+    }
 }
 
 plugins { id 'groovy' }
@@ -15,10 +19,6 @@ sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 apply plugin: 'com.synopsys.integration.library'
-
-tasks.named('licenseFormatMain').configure {
-    enabled = false
-}
 
 dependencies {
     api 'com.synopsys.integration:integration-rest:5.1.1'
