@@ -1,6 +1,10 @@
 buildscript {
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
-    apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-dependencies.gradle', to: buildscript
+    apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-cgp-version.gradle'
+
+    dependencies {
+        classpath "com.synopsys.integration:common-gradle-plugin:${managedCgpVersion}"
+    }
 }
 
 plugins { id 'groovy' }
@@ -9,7 +13,7 @@ project.ext.moduleName = 'com.synopsys.integration.coverity-common'
 project.ext.javaUseAutoModuleName = 'true'
 
 group = 'com.synopsys.integration'
-version = '0.8.2'
+version = '0.8.9'
 description = 'A library for using various capabilities of Coverity.'
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
